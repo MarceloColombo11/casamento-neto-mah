@@ -3,11 +3,11 @@
 import { useRef, useEffect, useCallback } from "react";
 
 const COLORS = [
-    "rgba(74, 83, 53, 0.38)",
-    "rgba(132, 150, 82, 0.42)",
-    "rgba(61, 23, 0, 0.34)",
-    "rgba(95, 108, 62, 0.4)",
-    "rgba(120, 95, 55, 0.32)",
+    "rgba(61, 79, 111, 0.36)",
+    "rgba(196, 165, 116, 0.4)",
+    "rgba(27, 39, 64, 0.32)",
+    "rgba(90, 107, 134, 0.38)",
+    "rgba(184, 149, 90, 0.34)",
 ] as const;
 
 type Leaf = {

@@ -207,7 +207,7 @@ export function CameraModal({
                       className={cn(
                         "size-12 min-h-12 min-w-12 rounded-full",
                         flashEnabled
-                          ? "bg-amber-200/80 text-amber-800"
+                          ? "bg-gold/40 text-brown"
                           : "bg-white/80"
                       )}
                       aria-label={
@@ -215,7 +215,7 @@ export function CameraModal({
                       }
                     >
                       {flashEnabled ? (
-                        <Zap className="size-6 fill-amber-600" />
+                        <Zap className="size-6 fill-gold text-gold" />
                       ) : (
                         <ZapOff className="size-6" />
                       )}
@@ -232,7 +232,7 @@ export function CameraModal({
                   onContextMenu={(e) => e.preventDefault()}
                   className={cn(
                     "relative flex size-16 min-h-16 min-w-16 shrink-0 touch-none items-center justify-center rounded-full p-0 transition-transform select-none",
-                    "bg-sage hover:bg-sage/90 disabled:opacity-50",
+                    "bg-sage text-brown hover:bg-gold disabled:opacity-50",
                     isRecording && "scale-110 bg-red-600 hover:bg-red-600"
                   )}
                   aria-label={

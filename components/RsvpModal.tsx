@@ -148,7 +148,7 @@ export function RsvpModal({ open, onOpenChange }: RsvpModalProps) {
             </div>
             <Button
               size="lg"
-              className="min-h-[44px] w-full min-w-[44px] rounded-xl bg-sage px-6 transition-transform active:scale-[0.98] hover:bg-sage/90"
+              className="min-h-[44px] w-full min-w-[44px] rounded-xl bg-sage px-6 text-brown transition-transform active:scale-[0.98] hover:bg-gold"
               onClick={handleClose}
             >
               Fechar
@@ -245,7 +245,7 @@ export function RsvpModal({ open, onOpenChange }: RsvpModalProps) {
 
             <Button
               type="submit"
-              className="w-full min-h-[44px] rounded-xl bg-sage py-3 text-base transition-transform active:scale-[0.98] hover:bg-sage/90 disabled:opacity-70"
+              className="w-full min-h-[44px] rounded-xl bg-sage py-3 text-base text-brown transition-transform active:scale-[0.98] hover:bg-gold disabled:opacity-70"
               disabled={loading}
             >
               {loading ? (

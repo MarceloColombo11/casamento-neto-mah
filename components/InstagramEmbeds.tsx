@@ -9,7 +9,8 @@ declare global {
     }
 }
 
-// URLs de posts do Instagram do local — preencher depois
+// URLs de posts do Instagram do local (opcional)
+// Perfil: https://www.instagram.com/greenspaceeventos/
 const INSTAGRAM_POSTS: string[] = [];
 
 export function InstagramEmbeds() {

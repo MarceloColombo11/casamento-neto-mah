@@ -26,7 +26,7 @@ export default function Home() {
             <main id="main" className="pt-20 md:pt-16">
                 {/* 1. Home - Hero + Countdown */}
                 <section id="home" className="min-h-[100dvh]">
-                    <div className="relative min-h-[100dvh] flex flex-col items-center justify-center bg-olive/10 overflow-hidden">
+                    <div className="relative min-h-[100dvh] flex flex-col items-center justify-center bg-olive/8 overflow-hidden">
                         <div className="absolute inset-0 opacity-30">
                             <Image
                                 src="/images/casal/1.jpeg"
@@ -37,7 +37,8 @@ export default function Home() {
                                 className="object-cover object-center"
                             />
                         </div>
-                        <div className="absolute inset-0 bg-cream/60" />
+                        <div className="absolute inset-0 bg-cream/70" />
+                        <div className="absolute inset-0 bg-olive/5" />
                         <FallingLeaves />
                         <div className="relative z-10 flex flex-col items-center justify-center px-4 py-12 text-center sm:py-16 md:py-20">
                             <Monograma

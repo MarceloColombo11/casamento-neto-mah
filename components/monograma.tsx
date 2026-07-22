@@ -16,13 +16,14 @@ interface MonogramaProps {
 }
 
 /**
- * Monograma do casal (placeholder visual herdado — trocar SVG para Neto & Mariah).
- * Usa o SVG de public/monograma.svg — vetorial, nítido em qualquer resolução.
+ * Monograma Neto & Mariah
+ * - Hero / destaque: SVG (`/images/mn.svg`)
+ * - Navbar / simple: PNG (`/images/mn.png`) — mais leve
  *
  * Uso:
  *   <Monograma />
  *   <Monograma size={240} className="mx-auto" />
- *   <Monograma className="h-12 md:h-14 w-auto" animate={false} />
+ *   <Monograma className="h-12 md:h-14 w-auto" animate={false} simple />
  */
 export default function Monograma({
     size = 160,
@@ -77,7 +78,7 @@ export default function Monograma({
             role="img"
         >
             <img
-                src={simple ? "/Monograma simples.svg" : "/monograma.svg"}
+                src={simple ? "/images/mn.png" : "/images/mn.svg"}
                 alt=""
                 className={
                     hasSizingClass

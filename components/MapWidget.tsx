@@ -1,18 +1,9 @@
 "use client";
 
-// Substitua pelo embed do Google Maps do local definitivo.
-const EMBED_URL = "";
+const EMBED_URL =
+    "https://www.google.com/maps?q=Green+Space+Eventos,+R.+Ewaldo+Bauer,+1075,+Vila+Itoupava,+Blumenau+-+SC,+89075-625&output=embed&hl=pt-BR";
 
 export function MapWidget() {
-    if (!EMBED_URL) {
-        return (
-            <div className="flex h-[280px] items-center justify-center rounded-xl border border-dashed border-olive/20 bg-cream/40 px-4 text-center text-sm text-olive/70 md:h-[350px] lg:h-[450px]">
-                Mapa do local — placeholder. Cole o embed do Google Maps em
-                components/MapWidget.tsx.
-            </div>
-        );
-    }
-
     return (
         <div className="space-y-4">
             <div className="overflow-hidden rounded-xl border border-olive/20 h-[280px] md:h-[350px] lg:h-[450px]">
@@ -24,7 +15,7 @@ export function MapWidget() {
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    title="Local do casamento no mapa"
+                    title="Green Space Eventos no mapa"
                     className="block h-full w-full"
                 />
             </div>

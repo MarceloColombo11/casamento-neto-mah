@@ -41,6 +41,16 @@ export function LocationSection() {
                   {venueData.telefone}
                 </a>
               </div>
+              {"site" in venueData && venueData.site ? (
+                <a
+                  href={venueData.site}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-sage underline-offset-4 transition-colors hover:underline"
+                >
+                  Site do local
+                </a>
+              ) : null}
             </div>
           </div>
 

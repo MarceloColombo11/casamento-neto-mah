@@ -10,13 +10,6 @@ export type AboutContent = {
     assinatura: string;
 };
 
-// Fallback quando não houver fotos em public ou lista vazia no JSON
-const FALLBACK_IMAGES = [
-    "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80",
-    "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80",
-    "https://images.unsplash.com/photo-1529636798458-92182e662485?w=800&q=80",
-];
-
 function isCitation(texto: string): boolean {
     const t = texto.trim();
     return t.startsWith('"') || t.includes("Isaías");
@@ -27,11 +20,6 @@ type AboutSectionProps = {
 };
 
 export function AboutSection({ content }: AboutSectionProps) {
-    const carouselImages =
-        content.imagensCarrossel.length > 0
-            ? content.imagensCarrossel
-            : FALLBACK_IMAGES;
-
     return (
         <div className="mx-auto max-w-7xl">
             <div className="mb-6 text-center">
@@ -47,7 +35,7 @@ export function AboutSection({ content }: AboutSectionProps) {
             <div className="grid gap-6 lg:grid-cols-2 lg:items-center lg:gap-8">
                 <div className="relative">
                     <PhotoCarousel
-                        images={carouselImages}
+                        images={content.imagensCarrossel}
                         alt="Neto e Mariah"
                     />
                 </div>

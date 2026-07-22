@@ -55,7 +55,7 @@ export function MediaQueueItem({
         )}
         {item.status === "success" && (
           <div className="absolute inset-0 flex items-center justify-center bg-sage/80">
-            <Check className="size-6 text-white" aria-hidden />
+            <Check className="size-6 text-brown" aria-hidden />
           </div>
         )}
       </div>

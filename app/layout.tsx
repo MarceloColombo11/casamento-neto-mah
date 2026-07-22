@@ -52,9 +52,9 @@ export const metadata: Metadata = {
         description: shareDescription,
         images: [
             {
-                url: "/images/monograma-share.jpeg",
-                width: 1136,
-                height: 1600,
+                url: "/images/mn.png",
+                width: 1024,
+                height: 1024,
                 alt: "Monograma Neto e Mariah — 13 de março de 2027",
             },
         ],
@@ -63,10 +63,10 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         title: shareTitle,
         description: shareDescription,
-        images: ["/images/monograma-share.jpeg"],
+        images: ["/images/mn.png"],
     },
     icons: {
-        icon: "/Monograma simples.svg",
+        icon: "/images/mn.png",
     },
 };
 
@@ -83,7 +83,7 @@ export default function RootLayout({
             <body className="min-h-full flex flex-col font-sans">
                 <a
                     href="#main"
-                    className="fixed left-4 top-4 z-[100] -translate-y-20 rounded-lg bg-sage px-4 py-2 text-white font-medium transition-transform focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2"
+                    className="fixed left-4 top-4 z-[100] -translate-y-20 rounded-lg bg-sage px-4 py-2 text-brown font-medium transition-transform focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2"
                 >
                     Pular para conteúdo
                 </a>

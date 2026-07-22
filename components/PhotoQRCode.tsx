@@ -56,14 +56,14 @@ export function PhotoQRCode({
   if (!url) return null;
 
   return (
-    <div className="flex flex-col items-center gap-4 rounded-2xl border border-amber-200/40 bg-linear-to-b from-white to-cream/50 p-6 shadow-sm">
+    <div className="flex flex-col items-center gap-4 rounded-2xl border border-gold/35 bg-linear-to-b from-white to-cream/50 p-6 shadow-sm">
       <div className="relative flex flex-col items-center gap-2">
         <QRCodeSVG
           ref={svgRef}
           value={url}
           size={200}
           level="M"
-          className="rounded-xl border border-amber-200/50 bg-white p-3"
+          className="rounded-xl border border-gold/40 bg-white p-3"
         />
       </div>
       <p className="text-center text-sm font-medium text-brown">

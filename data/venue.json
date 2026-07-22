@@ -1,12 +1,14 @@
 {
-  "nome": "Local a definir",
+  "nome": "Green Space Eventos",
   "descricao": [
-    "Descrição do local do casamento — placeholder.",
-    "Atualize nome, endereço, telefone, Instagram e logo quando o venue estiver definido."
+    "O lugar onde celebraremos a nossa união fica em Blumenau: o Green Space Eventos, um espaço verde pensado para transformar o grande dia em memória eterna.",
+    "Com mirante, fonte para fotos, gramado para cerimônia ao ar livre, chalé da noiva, salão principal e estacionamento amplo e gratuito, cada detalhe do espaço convida a celebrar com conforto e elegância.",
+    "Que, ao chegarem, vocês sintam o mesmo que nós: acolhimento, natureza e a certeza de que este será o cenário perfeito para o nosso sim."
   ],
-  "instagram": "https://www.instagram.com/",
-  "instagramHandle": "instagram",
-  "endereco": "Endereço a definir",
-  "telefone": "(00) 00000-0000",
-  "logo": "/images/venue-placeholder.jpg"
+  "instagram": "https://www.instagram.com/greenspaceeventos/",
+  "instagramHandle": "greenspaceeventos",
+  "endereco": "R. Ewaldo Bauer, 1075 — Vila Itoupava, Blumenau/SC — CEP 89075-625",
+  "telefone": "(47) 99901-6483",
+  "logo": "/images/green-space-logo.png",
+  "site": "https://www.greenspaceeventos.com.br/"
 }

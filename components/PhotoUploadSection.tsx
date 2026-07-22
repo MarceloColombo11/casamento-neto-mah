@@ -65,12 +65,12 @@ export function PhotoUploadSection() {
       <div className="space-y-6" aria-live="polite" aria-busy={isUploading}>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-stretch">
           <div className="flex flex-1 flex-col gap-6">
-            <div className="rounded-2xl border border-amber-200/60 bg-linear-to-b from-white to-cream/80 p-6 shadow-sm">
+            <div className="rounded-2xl border border-gold/40 bg-linear-to-b from-white to-cream/80 p-6 shadow-sm">
               <Button
                 type="button"
                 onClick={handleCameraOpen}
                 disabled={camera.isOpen}
-                className="h-16 w-full min-h-16 gap-4 rounded-xl bg-sage py-4 text-lg font-medium text-white transition-colors hover:bg-sage/90 disabled:opacity-70"
+                className="h-16 w-full min-h-16 gap-4 rounded-xl bg-sage py-4 text-lg font-medium text-brown transition-colors hover:bg-gold disabled:opacity-70"
               >
                 <Camera className="size-8" aria-hidden />
                 <span>Câmera</span>

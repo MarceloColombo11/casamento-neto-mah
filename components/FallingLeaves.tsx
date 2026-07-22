@@ -3,9 +3,10 @@
 import { useMemo, useLayoutEffect, useState } from "react";
 
 const PALETTE = [
-    "rgba(74, 83, 53, 0.45)", // olive
-    "rgba(132, 150, 82, 0.5)", // sage
-    "rgba(61, 23, 0, 0.4)", // brown
+    "rgba(61, 79, 111, 0.42)", // slate navy
+    "rgba(196, 165, 116, 0.48)", // honey gold
+    "rgba(27, 39, 64, 0.38)", // deep navy
+    "rgba(184, 149, 90, 0.4)", // gold strong
 ] as const;
 
 interface LeafConfig {
