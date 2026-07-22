@@ -14,7 +14,7 @@
  * 7. Configure a URL em GOOGLE_APPS_SCRIPT_RSVP_URL
  */
 
-const SPREADSHEET_ID = "17KrG8rcCGgOIheSB1cj2Kaqr4frYq5fAe3-2Gbw8XaQ";
+const SPREADSHEET_ID = "1RsMGXV4xApjcQIbUuo_t5GRgrYq2faGL33HhXLE7f2s";
 
 /** GET: teste/autorização - abra a URL no navegador para autorizar o script */
 function doGet() {
