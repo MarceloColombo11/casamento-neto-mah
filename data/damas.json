@@ -1,0 +1,12 @@
+[
+    {
+        "nome": "Dama 1",
+        "foto": "",
+        "texto": "Texto de homenagem — placeholder. Adicione a foto em public/images/damas/."
+    },
+    {
+        "nome": "Dama 2",
+        "foto": "",
+        "texto": "Texto de homenagem — placeholder."
+    }
+]

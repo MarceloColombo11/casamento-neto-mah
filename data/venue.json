@@ -1,0 +1,12 @@
+{
+  "nome": "Local a definir",
+  "descricao": [
+    "Descrição do local do casamento — placeholder.",
+    "Atualize nome, endereço, telefone, Instagram e logo quando o venue estiver definido."
+  ],
+  "instagram": "https://www.instagram.com/",
+  "instagramHandle": "instagram",
+  "endereco": "Endereço a definir",
+  "telefone": "(00) 00000-0000",
+  "logo": "/images/venue-placeholder.jpg"
+}

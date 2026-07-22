@@ -1,0 +1,26 @@
+[
+    {
+        "id": "1",
+        "nome": "Presente exemplo 1",
+        "descricao": "Descrição placeholder — substitua pela lista real e pela chave Pix.",
+        "valor": "R$ 100,00",
+        "chavePix": "",
+        "imagem": null
+    },
+    {
+        "id": "2",
+        "nome": "Presente exemplo 2",
+        "descricao": "Descrição placeholder.",
+        "valor": "R$ 200,00",
+        "chavePix": "",
+        "imagem": null
+    },
+    {
+        "id": "3",
+        "nome": "Presente exemplo 3",
+        "descricao": "Descrição placeholder.",
+        "valor": "R$ 300,00",
+        "chavePix": "",
+        "imagem": null
+    }
+]

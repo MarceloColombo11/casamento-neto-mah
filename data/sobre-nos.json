@@ -1,0 +1,10 @@
+{
+    "imagensCarrossel": [],
+    "titulo": "Sobre Nós",
+    "subtitulo": "Nossa história de amor",
+    "paragrafos": [
+        "Texto sobre a história do casal — placeholder. Substitua pelos parágrafos reais quando estiverem prontos.",
+        "Adicione fotos em public/images/casal/ e liste os caminhos em imagensCarrossel."
+    ],
+    "assinatura": "Neto & Mariah"
+}
