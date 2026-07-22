@@ -36,7 +36,7 @@ export function AboutSection({ content }: AboutSectionProps) {
                 <div className="relative">
                     <PhotoCarousel
                         images={content.imagensCarrossel}
-                        alt="Neto e Mariah"
+                        alt="Neto & Mariah"
                     />
                 </div>
                 <div className="mx-auto max-w-prose space-y-2 text-center">
