@@ -34,14 +34,14 @@ export default function Home() {
                                 ariaHidden
                                 className="h-36 w-36 bg-navy sm:h-44 sm:w-44 md:h-52 md:w-52"
                             />
-                            <p className="mt-1.5 font-heading text-lg font-medium tracking-wide text-navy sm:mt-2 sm:text-xl md:text-2xl">
-                                13 de março de 2027
-                            </p>
                         </div>
                     </div>
 
                     <div className="px-4 py-10 text-center sm:py-12 md:py-14">
-                        <p className="mx-auto max-w-xl text-base leading-relaxed text-olive sm:text-lg">
+                        <p className="font-heading text-lg font-light tracking-[0.28em] text-navy sm:text-xl md:text-2xl">
+                            13 · 03 · 2027
+                        </p>
+                        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-olive sm:mt-5 sm:text-lg">
                             Estamos contando os dias para celebrar esse momento
                             com você.
                         </p>
