@@ -1,92 +1,93 @@
 "use client";
 
-import { MapPin, Phone } from "lucide-react";
+import Image from "next/image";
+import { Instagram, MapPin, Phone } from "lucide-react";
 import venueData from "@/data/venue.json";
-import { InstagramEmbeds } from "./InstagramEmbeds";
 import { MapWidget } from "./MapWidget";
 
 export function LocationSection() {
-  return (
-    <div className="mx-auto max-w-7xl">
-      <div className="mb-12 text-center">
-        <h2 className="font-heading text-3xl font-semibold text-brown md:text-4xl">
-          Local
-        </h2>
-        <p className="mt-4 text-olive">Onde celebraremos nosso amor</p>
-      </div>
+    const imagens = venueData.imagens ?? [];
 
-      <div className="flex flex-col gap-12">
-        <div className="space-y-6">
-          <div className="text-center">
-            <h3 className="font-heading text-2xl font-semibold text-brown">
-              {venueData.nome}
-            </h3>
-            <div className="mt-4 space-y-4 text-olive/90 leading-relaxed">
-              {venueData.descricao.map((paragraph, i) => (
-                <p key={i}>{paragraph}</p>
-              ))}
+    return (
+        <div className="mx-auto max-w-7xl">
+            <div className="mb-10 text-center md:mb-12">
+                <h2 className="font-heading text-3xl font-semibold text-navy md:text-4xl">
+                    Local
+                </h2>
+                <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-navy/80 sm:text-lg">
+                    {venueData.descricao[0]}
+                </p>
             </div>
 
-            <div className="mt-6 flex flex-col items-center gap-3">
-              <div className="flex items-center justify-center gap-3">
-                <MapPin className="size-5 shrink-0 text-sage" />
-                <p className="text-olive/90">{venueData.endereco}</p>
-              </div>
-              <div className="flex items-center justify-center gap-3">
-                <Phone className="size-5 shrink-0 text-sage" />
-                <a
-                  href={`tel:+55${venueData.telefone.replace(/\D/g, "")}`}
-                  className="text-olive/90 transition-colors hover:text-sage"
-                >
-                  {venueData.telefone}
-                </a>
-              </div>
-              {"site" in venueData && venueData.site ? (
-                <a
-                  href={venueData.site}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-sage underline-offset-4 transition-colors hover:underline"
-                >
-                  Site do local
-                </a>
-              ) : null}
-            </div>
-          </div>
+            <div className="flex flex-col gap-10 md:gap-12">
+                {imagens.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+                        {imagens.map((src, i) => (
+                            <div
+                                key={src}
+                                className="relative aspect-[4/3] overflow-hidden rounded-xl border border-beige"
+                            >
+                                <Image
+                                    src={src}
+                                    alt={`${venueData.nome} — foto ${i + 1}`}
+                                    fill
+                                    sizes="(max-width: 640px) 100vw, 50vw"
+                                    className="object-cover object-center"
+                                    priority={i === 0}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                ) : null}
 
-          <MapWidget />
+                <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
+                    <h3 className="font-heading text-2xl font-medium text-navy">
+                        {venueData.nome}
+                    </h3>
+
+                    <div className="flex items-start justify-center gap-3">
+                        <MapPin className="mt-0.5 size-5 shrink-0 text-gold" />
+                        <p className="text-pretty text-navy/80">
+                            {venueData.endereco}
+                        </p>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-4">
+                        <div className="flex items-center gap-3">
+                            <Phone className="size-5 shrink-0 text-gold" />
+                            <a
+                                href={`tel:+55${venueData.telefone.replace(/\D/g, "")}`}
+                                className="text-navy/80 transition-colors hover:text-gold"
+                            >
+                                {venueData.telefone}
+                            </a>
+                        </div>
+                        <a
+                            href={venueData.instagram}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-navy/80 transition-colors hover:text-gold"
+                            aria-label={`Instagram @${venueData.instagramHandle}`}
+                        >
+                            <Instagram className="size-5 shrink-0 text-gold" />
+                            <span>@{venueData.instagramHandle}</span>
+                        </a>
+                    </div>
+
+                    {"site" in venueData && venueData.site ? (
+                        <a
+                            href={venueData.site}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-gold underline-offset-4 transition-colors hover:underline"
+                        >
+                            Site do local
+                        </a>
+                    ) : null}
+                </div>
+
+                <MapWidget />
+            </div>
         </div>
-
-        <div className="space-y-8">
-          <a
-            href={venueData.instagram}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex flex-col items-center gap-4 rounded-xl border border-olive/20 bg-cream/50 p-8 transition-opacity hover:opacity-80"
-            aria-label="Ver perfil do local no Instagram"
-          >
-            <div className="flex size-20 shrink-0 overflow-hidden rounded-full bg-cream shadow-[0_2px_12px_rgba(0,0,0,0.08)] transition-shadow duration-300 group-hover:shadow-[0_8px_24px_rgba(0,0,0,0.15)]">
-              <img
-                src={venueData.logo}
-                alt={venueData.nome}
-                className="size-full object-cover"
-              />
-            </div>
-            <div className="text-center">
-              <p className="font-medium text-brown">@{venueData.instagramHandle}</p>
-              <p className="mt-1 text-sm text-olive">
-                Confira fotos e novidades
-              </p>
-            </div>
-          </a>
-          <div>
-            <h4 className="mb-4 font-heading text-lg font-semibold text-brown text-center">
-              Publicações do local
-            </h4>
-            <InstagramEmbeds />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }

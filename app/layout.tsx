@@ -37,8 +37,7 @@ function resolveMetadataBase(): URL {
 }
 
 const shareTitle = "Neto & Mariah — 13.03.2027";
-const shareDescription =
-    "Celebremos juntos o amor de Neto e Mariah. 13 de março de 2027.";
+const shareDescription = "Celebremos juntos o amor de Neto e Mariah. .";
 
 export const metadata: Metadata = {
     metadataBase: resolveMetadataBase(),
@@ -55,7 +54,7 @@ export const metadata: Metadata = {
                 url: "/images/mn.png",
                 width: 1024,
                 height: 1024,
-                alt: "Monograma Neto e Mariah — 13 de março de 2027",
+                alt: "Monograma Neto e Mariah — ",
             },
         ],
     },

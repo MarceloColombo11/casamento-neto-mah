@@ -6,13 +6,13 @@ Criar o site de casamento de **Neto & Mariah** como cópia funcional do projeto 
 
 ## Decisões
 
-| Item | Valor |
-|------|--------|
-| Abordagem | Cópia rsync + sanitização |
-| Casal | Neto & Mariah |
-| Data | 13 de março de 2027 |
-| Horário | 16:00 (placeholder) |
-| Repo GitHub | `casamento-neto-mah` (privado) |
+| Item           | Valor                             |
+| -------------- | --------------------------------- |
+| Abordagem      | Cópia rsync + sanitização         |
+| Casal          | Neto & Mariah                     |
+| Data           |                                   |
+| Horário        | 16:00 (placeholder)               |
+| Repo GitHub    | `casamento-neto-mah` (privado)    |
 | Vercel / Drive | Configuração posterior pelo autor |
 
 ## Escopo incluído

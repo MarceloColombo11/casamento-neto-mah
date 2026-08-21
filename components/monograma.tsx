@@ -1,18 +1,25 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 
 interface MonogramaProps {
     /** Tamanho em pixels (largura = altura). Usado quando className não define tamanho. Padrão: 160 */
     size?: number;
     /** Classe CSS para o wrapper (ex: "h-12 md:h-14 w-auto" para Navbar, "h-24 md:h-36 w-auto mb-6" para Hero) */
     className?: string;
+    /** Estilos inline adicionais (ex: drop-shadow no monograma sólido) */
+    style?: CSSProperties;
     /** Animar com fade-in ao montar. Padrão: true */
     animate?: boolean;
     /** Oculta de leitores de tela (ex: quando há h1 equivalente) */
     ariaHidden?: boolean;
     /** Usa a versão simples do monograma (ex: Navbar). Padrão: false */
     simple?: boolean;
+    /**
+     * Renderiza o monograma em cor sólida via máscara CSS.
+     * Use classes Tailwind de cor no `className` (ex: `bg-navy`).
+     */
+    solid?: boolean;
 }
 
 /**
@@ -28,11 +35,14 @@ interface MonogramaProps {
 export default function Monograma({
     size = 160,
     className = "",
+    style,
     animate = true,
     ariaHidden = false,
     simple = false,
+    solid = false,
 }: MonogramaProps) {
     const ref = useRef<HTMLDivElement>(null);
+    const src = simple ? "/images/mn.png" : "/images/mn.svg";
 
     useEffect(() => {
         if (!animate || !ref.current) return;
@@ -64,21 +74,45 @@ export default function Monograma({
         className,
     );
 
+    const sizeStyle = hasSizingClass
+        ? { display: "inline-block" as const }
+        : { width: size, height: size, display: "inline-block" as const };
+
+    if (solid) {
+        return (
+            <div
+                ref={ref}
+                className={className}
+                style={{
+                    ...sizeStyle,
+                    maskImage: `url(${src})`,
+                    WebkitMaskImage: `url(${src})`,
+                    maskSize: "contain",
+                    WebkitMaskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    WebkitMaskPosition: "center",
+                    ...style,
+                }}
+                aria-label={ariaHidden ? undefined : "Monograma Neto e Mariah"}
+                aria-hidden={ariaHidden || undefined}
+                role="img"
+            />
+        );
+    }
+
     return (
         <div
             ref={ref}
             className={className}
-            style={
-                hasSizingClass
-                    ? { display: "inline-block" }
-                    : { width: size, height: size, display: "inline-block" }
-            }
+            style={{ ...sizeStyle, ...style }}
             aria-label={ariaHidden ? undefined : "Monograma Neto e Mariah"}
             aria-hidden={ariaHidden || undefined}
             role="img"
         >
             <img
-                src={simple ? "/images/mn.png" : "/images/mn.svg"}
+                src={src}
                 alt=""
                 className={
                     hasSizingClass

@@ -1,14 +1,17 @@
 {
-  "nome": "Green Space Eventos",
+  "nome": "Green Space",
   "descricao": [
-    "O lugar onde celebraremos a nossa união fica em Blumenau: o Green Space Eventos, um espaço verde pensado para transformar o grande dia em memória eterna.",
-    "Com mirante, fonte para fotos, gramado para cerimônia ao ar livre, chalé da noiva, salão principal e estacionamento amplo e gratuito, cada detalhe do espaço convida a celebrar com conforto e elegância.",
-    "Que, ao chegarem, vocês sintam o mesmo que nós: acolhimento, natureza e a certeza de que este será o cenário perfeito para o nosso sim."
+    "A cerimônia e a festa acontecerão no Green Space, um lugar especial em meio à natureza."
   ],
   "instagram": "https://www.instagram.com/greenspaceeventos/",
   "instagramHandle": "greenspaceeventos",
-  "endereco": "R. Ewaldo Bauer, 1075 — Vila Itoupava, Blumenau/SC — CEP 89075-625",
+  "endereco": "R. Ewaldo Bauer, 1075 - Vila Itoupava, Blumenau - SC, 89075-625",
   "telefone": "(47) 99901-6483",
   "logo": "/images/green-space-logo.png",
-  "site": "https://www.greenspaceeventos.com.br/"
+  "site": "https://www.greenspaceeventos.com.br/",
+  "imagens": [
+    "/images/local/01.png",
+    "/images/local/02.png"
+  ],
+  "mapsQuery": "Green Space Eventos, R. Ewaldo Bauer, 1075, Vila Itoupava, Blumenau - SC, 89075-625"
 }

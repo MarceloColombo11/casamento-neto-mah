@@ -1,41 +1,41 @@
 [
-  {
-    "hora": "15:30",
-    "titulo": "Recepção dos Convidados",
-    "resumo": "Chegue com calma — horários placeholder.",
-    "descricao": "Cheguem com calma e com o coração aberto — estaremos no Green Space Eventos, em Vila Itoupava (Blumenau/SC), esperando por vocês.\n\nHá estacionamento amplo e gratuito. Ajuste de horários ainda é placeholder.",
-    "icone": "coffee",
-    "local": "Green Space Eventos — Vila Itoupava, Blumenau/SC",
-    "destaque": true
-  },
-  {
-    "hora": "16:00",
-    "titulo": "Início da Cerimônia",
-    "resumo": "A hora do sim! (horário placeholder)",
-    "descricao": "Cerimônia de Neto e Mariah — 13 de março de 2027, às 16:00 (horário a confirmar), no Green Space Eventos.",
-    "icone": "church",
-    "local": "Green Space Eventos — Vila Itoupava, Blumenau/SC",
-    "destaque": true
-  },
-  {
-    "hora": "17:00",
-    "titulo": "Cocktail",
-    "resumo": "Celebrar com calma.",
-    "descricao": "Detalhes do cocktail — placeholder.",
-    "icone": "wine"
-  },
-  {
-    "hora": "19:00",
-    "titulo": "Jantar",
-    "resumo": "Hora de sentar à mesa.",
-    "descricao": "Detalhes do jantar — placeholder.",
-    "icone": "utensils"
-  },
-  {
-    "hora": "20:30",
-    "titulo": "Festa",
-    "resumo": "Pista aberta.",
-    "descricao": "Detalhes da festa — placeholder.",
-    "icone": "music"
-  }
+    {
+        "hora": "15:30",
+        "titulo": "Recepção dos Convidados",
+        "resumo": "Chegue com calma — horários placeholder.",
+        "descricao": "Cheguem com calma e com o coração aberto — estaremos no Green Space Eventos, em Vila Itoupava (Blumenau/SC), esperando por vocês.\n\nHá estacionamento amplo e gratuito. Ajuste de horários ainda é placeholder.",
+        "icone": "coffee",
+        "local": "Green Space Eventos — Vila Itoupava, Blumenau/SC",
+        "destaque": true
+    },
+    {
+        "hora": "16:00",
+        "titulo": "Início da Cerimônia",
+        "resumo": "A hora do sim! (horário placeholder)",
+        "descricao": "Cerimônia de Neto e Mariah — , às 16:00 (horário a confirmar), no Green Space Eventos.",
+        "icone": "church",
+        "local": "Green Space Eventos — Vila Itoupava, Blumenau/SC",
+        "destaque": true
+    },
+    {
+        "hora": "17:00",
+        "titulo": "Cocktail",
+        "resumo": "Celebrar com calma.",
+        "descricao": "Detalhes do cocktail — placeholder.",
+        "icone": "wine"
+    },
+    {
+        "hora": "19:00",
+        "titulo": "Jantar",
+        "resumo": "Hora de sentar à mesa.",
+        "descricao": "Detalhes do jantar — placeholder.",
+        "icone": "utensils"
+    },
+    {
+        "hora": "20:30",
+        "titulo": "Festa",
+        "resumo": "Pista aberta.",
+        "descricao": "Detalhes da festa — placeholder.",
+        "icone": "music"
+    }
 ]

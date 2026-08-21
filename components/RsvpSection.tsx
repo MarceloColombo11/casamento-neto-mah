@@ -10,7 +10,7 @@ export function RsvpSection() {
   return (
     <div className="mx-auto max-w-2xl text-center">
       <h2 className="font-heading text-3xl font-semibold text-brown md:text-4xl">
-        Confirmação de Presença
+        Confirmação
       </h2>
       <p className="mt-6 text-olive leading-relaxed">
         Seria uma honra contar com sua presença neste dia tão especial. Por

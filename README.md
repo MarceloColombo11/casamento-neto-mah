@@ -1,6 +1,6 @@
 # Site de Casamento — Neto & Mariah
 
-Esqueleto do site para o casamento de Neto e Mariah. Data: **13 de março de 2027, às 16:00** (horário placeholder).
+Esqueleto do site para o casamento de Neto e Mariah. Data: **, às 16:00** (horário placeholder).
 
 Baseado na arquitetura do site Suelen & Marcelo (mesmas seções, RSVP e upload de fotos via Google Drive).
 
@@ -28,15 +28,15 @@ Acesse [http://localhost:3000](http://localhost:3000).
 1. Copie `.env.local.example` para `.env.local`
 2. Preencha as variáveis:
 
-| Variável | Descrição |
-|----------|-----------|
-| `GOOGLE_APPS_SCRIPT_RSVP_URL` | URL da Web App de confirmação (somente servidor) |
-| `GOOGLE_OAUTH_CLIENT_ID` | OAuth Desktop client (upload Drive) |
-| `GOOGLE_OAUTH_CLIENT_SECRET` | Secret do OAuth client |
-| `GOOGLE_OAUTH_REFRESH_TOKEN` | Refresh token da conta dona da pasta (`npm run drive:oauth`) |
-| `GOOGLE_DRIVE_FOLDER_ID` | ID da pasta do Drive onde as mídias serão salvas |
-| `NEXT_PUBLIC_SITE_URL` | (Opcional) URL pública do site — ajuda no CORS do upload |
-| `NEXT_PUBLIC_WEDDING_DATE` | Data e hora (ex: 2027-03-13T16:00:00) |
+| Variável                      | Descrição                                                    |
+| ----------------------------- | ------------------------------------------------------------ |
+| `GOOGLE_APPS_SCRIPT_RSVP_URL` | URL da Web App de confirmação (somente servidor)             |
+| `GOOGLE_OAUTH_CLIENT_ID`      | OAuth Desktop client (upload Drive)                          |
+| `GOOGLE_OAUTH_CLIENT_SECRET`  | Secret do OAuth client                                       |
+| `GOOGLE_OAUTH_REFRESH_TOKEN`  | Refresh token da conta dona da pasta (`npm run drive:oauth`) |
+| `GOOGLE_DRIVE_FOLDER_ID`      | ID da pasta do Drive onde as mídias serão salvas             |
+| `NEXT_PUBLIC_SITE_URL`        | (Opcional) URL pública do site — ajuda no CORS do upload     |
+| `NEXT_PUBLIC_WEDDING_DATE`    | Data e hora (ex: 2027-03-13T16:00:00)                        |
 
 ## Upload de mídias (Google Drive)
 
