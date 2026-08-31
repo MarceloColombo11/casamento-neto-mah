@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 const SECTION_IDS = [
     "home",
     "grande-dia",
-    "como-sera",
     "local",
     "traje",
     "nossa-historia",
@@ -17,11 +16,6 @@ const SECTION_IDS = [
 
 const NAV_LINKS = [
     { href: "#grande-dia", label: "O Grande Dia", sectionId: "grande-dia" },
-    {
-        href: "#como-sera",
-        label: "Como será o grande dia",
-        sectionId: "como-sera",
-    },
     { href: "#local", label: "Local", sectionId: "local" },
     { href: "#traje", label: "Traje", sectionId: "traje" },
     {
@@ -63,16 +57,10 @@ export function Navbar() {
     }, []);
 
     return (
-        <header className="bg-white pt-[env(safe-area-inset-top,0px)]">
-            <div className="mx-auto max-w-7xl px-4 py-4 text-center sm:px-6 sm:py-5 lg:px-8">
-                <Link href="#home" className="inline-block">
-                    <h1 className="font-heading text-xl font-light tracking-[0.22em] text-navy sm:text-2xl md:text-3xl">
-                        Mariah & Neto
-                    </h1>
-                </Link>
-
+        <header className="absolute inset-x-0 top-0 z-20 pt-[env(safe-area-inset-top,0px)]">
+            <div className="mx-auto max-w-7xl px-4 py-3 text-center sm:px-6 sm:py-4 lg:px-8">
                 <nav
-                    className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 sm:mt-3.5 sm:gap-x-6"
+                    className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 sm:gap-x-6"
                     aria-label="Navegação principal"
                 >
                     {NAV_LINKS.map((link) => {
@@ -84,8 +72,8 @@ export function Navbar() {
                                 className={cn(
                                     "font-heading text-[11px] font-light tracking-[0.14em] transition-colors sm:text-xs sm:tracking-[0.16em]",
                                     isActive
-                                        ? "text-navy"
-                                        : "text-navy/70 hover:text-gold",
+                                        ? "text-white"
+                                        : "text-white/80 hover:text-gold",
                                 )}
                             >
                                 {link.label}

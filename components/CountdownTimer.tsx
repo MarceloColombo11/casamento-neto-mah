@@ -63,12 +63,12 @@ export function CountdownTimer() {
             {cards.map(({ label, value }) => (
                 <div
                     key={label}
-                    className="flex w-20 shrink-0 flex-col items-center justify-center rounded-lg border border-beige bg-white py-3 shadow-sm sm:w-24 sm:py-4"
+                    className="flex w-20 shrink-0 flex-col items-center justify-center rounded-lg bg-navy py-3 shadow-sm sm:w-24 sm:py-4"
                 >
-                    <span className="inline-block w-[3ch] text-center font-heading text-2xl font-semibold tabular-nums text-navy sm:text-3xl md:text-4xl">
+                    <span className="inline-block w-[3ch] text-center font-heading text-2xl font-semibold tabular-nums text-white sm:text-3xl md:text-4xl">
                         {label === "Dias" ? pad(value, 3) : pad(value)}
                     </span>
-                    <span className="mt-1 text-xs text-gold sm:text-sm">
+                    <span className="mt-1 text-xs text-white sm:text-sm">
                         {label}
                     </span>
                 </div>
