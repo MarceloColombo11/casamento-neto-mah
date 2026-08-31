@@ -7,24 +7,33 @@ import { cn } from "@/lib/utils";
 const SECTION_IDS = [
     "home",
     "grande-dia",
-    "nossa-historia",
+    "como-sera",
     "local",
     "traje",
+    "nossa-historia",
     "presentes",
     "confirmacao",
-    "fotos",
 ] as const;
 
 const NAV_LINKS = [
     { href: "#grande-dia", label: "O Grande Dia", sectionId: "grande-dia" },
     {
+        href: "#como-sera",
+        label: "Como será o grande dia",
+        sectionId: "como-sera",
+    },
+    { href: "#local", label: "Local", sectionId: "local" },
+    { href: "#traje", label: "Traje", sectionId: "traje" },
+    {
         href: "#nossa-historia",
         label: "Nossa História",
         sectionId: "nossa-historia",
     },
-    { href: "#local", label: "Local", sectionId: "local" },
-    { href: "#traje", label: "Traje", sectionId: "traje" },
-    { href: "#presentes", label: "Presentes", sectionId: "presentes" },
+    {
+        href: "#presentes",
+        label: "Lista de presentes",
+        sectionId: "presentes",
+    },
     { href: "#confirmacao", label: "Confirmação", sectionId: "confirmacao" },
 ] as const;
 

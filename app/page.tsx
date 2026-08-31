@@ -5,8 +5,8 @@ import { GiftsSection } from "@/components/GiftsSection";
 import { LocationSection } from "@/components/LocationSection";
 import { RsvpSection } from "@/components/RsvpSection";
 import { AboutSection } from "@/components/AboutSection";
+import { GrandeDiaSection } from "@/components/GrandeDiaSection";
 import { TimelineSection } from "@/components/TimelineSection";
-import { PhotoUploadSection } from "@/components/PhotoUploadSection";
 import { TrajeSection } from "@/components/TrajeSection";
 import { HeroBackgroundCarousel } from "@/components/HeroBackgroundCarousel";
 import Monograma from "@/components/monograma";
@@ -28,11 +28,9 @@ export default function Home() {
                         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-4 text-center">
                             <h2 className="sr-only">Neto & Mariah</h2>
                             <Monograma
-                                solid
-                                simple
                                 animate={false}
                                 ariaHidden
-                                className="h-36 w-36 bg-navy sm:h-44 sm:w-44 md:h-52 md:w-52"
+                                className="h-36 w-36 sm:h-44 sm:w-44 md:h-52 md:w-52"
                             />
                         </div>
                     </div>
@@ -56,15 +54,15 @@ export default function Home() {
                     id="grande-dia"
                     className="bg-white px-4 py-16 md:py-20 lg:py-24"
                 >
-                    <TimelineSection events={programacaoData} />
+                    <GrandeDiaSection />
                 </section>
 
-                {/* 3. Nossa História */}
+                {/* 3. Como será o grande dia */}
                 <section
-                    id="nossa-historia"
-                    className="bg-white px-4 py-12 md:py-16 lg:py-20"
+                    id="como-sera"
+                    className="bg-white px-4 py-16 md:py-20 lg:py-24"
                 >
-                    <AboutSection content={sobreNosData} />
+                    <TimelineSection events={programacaoData} />
                 </section>
 
                 {/* 4. Local */}
@@ -83,7 +81,15 @@ export default function Home() {
                     <TrajeSection />
                 </section>
 
-                {/* 6. Presentes */}
+                {/* 6. Nossa História */}
+                <section
+                    id="nossa-historia"
+                    className="bg-white px-4 py-12 md:py-16 lg:py-20"
+                >
+                    <AboutSection content={sobreNosData} />
+                </section>
+
+                {/* 7. Lista de presentes */}
                 <section
                     id="presentes"
                     className="bg-white px-4 py-16 md:py-20 lg:py-24"
@@ -95,20 +101,12 @@ export default function Home() {
                     />
                 </section>
 
-                {/* 7. Confirmação */}
+                {/* 8. Confirmação */}
                 <section
                     id="confirmacao"
                     className="bg-white px-4 py-16 md:py-20 lg:py-24"
                 >
                     <RsvpSection />
-                </section>
-
-                {/* 8. Fotos (fora do menu) */}
-                <section
-                    id="fotos"
-                    className="bg-white px-4 py-16 md:py-20 lg:py-24"
-                >
-                    <PhotoUploadSection />
                 </section>
             </main>
             <Footer />
