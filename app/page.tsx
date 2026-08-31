@@ -18,11 +18,14 @@ import sobreNosData from "@/data/sobre-nos.json";
 export default function Home() {
     return (
         <>
+            <Navbar />
             <main id="main">
                 {/* 1. Home — carrossel + countdown */}
                 <section id="home" className="relative bg-white">
-                    <Navbar />
-                    <div className="relative h-[85dvh] min-h-90 overflow-hidden sm:h-[90dvh] md:h-dvh">
+                    <div
+                        id="hero"
+                        className="relative h-[85dvh] min-h-90 overflow-hidden sm:h-[90dvh] md:h-dvh"
+                    >
                         <HeroBackgroundCarousel />
                         <div className="pointer-events-none absolute inset-0 bg-white/20" />
                         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-4 text-center">
