@@ -12,10 +12,11 @@ export const HERO_IMAGES = [
     "/images/hero/01.jpg",
     "/images/hero/02.jpg",
     "/images/hero/03.jpg",
+    "/images/hero/02.jpg",
 ] as const;
 
 /** Duração total do ciclo (todas as fotos). Quanto maior, mais lento/suave. */
-const LOOP_DURATION_S = 48;
+const LOOP_DURATION_S = 64;
 
 export function HeroBackgroundCarousel() {
     const [reduceMotion, setReduceMotion] = useState(false);
