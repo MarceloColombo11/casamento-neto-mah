@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 export function TrajeSection() {
     return (
         <div className="mx-auto max-w-3xl text-center">
@@ -11,8 +9,7 @@ export function TrajeSection() {
                 <p>
                     Para celebrar esse momento, sugerimos o traje esporte fino.
                     Fiquem à vontade para escolher o estilo e a cor que mais
-                    combinarem com vocês, dentro dessa proposta (algumas
-                    referências abaixo).
+                    combinarem com vocês, dentro dessa proposta.
                 </p>
                 <p>
                     Pedimos apenas que evitem terno cinza claro, reservado aos
@@ -26,17 +23,6 @@ export function TrajeSection() {
                     as mulheres escolham o salto priorizando modelos que
                     proporcionem mais conforto e estabilidade.
                 </p>
-            </div>
-
-            <div className="mx-auto mt-10 w-full max-w-2xl overflow-hidden rounded-xl border border-beige bg-white">
-                <Image
-                    src="/images/traje/esporte-fino.jpg"
-                    alt="Referências de traje esporte fino para convidados"
-                    width={1200}
-                    height={900}
-                    sizes="(max-width: 768px) 100vw, 672px"
-                    className="h-auto w-full object-contain"
-                />
             </div>
         </div>
     );
