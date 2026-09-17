@@ -1,161 +1,75 @@
 import { NextResponse } from "next/server";
 import { getClientIp, isAllowedOrigin } from "@/lib/request-origin";
+import { isRsvpRateLimited } from "@/lib/rsvp-rate-limit";
+import { applyPublicRsvp } from "@/lib/content/guests";
+import { getDb } from "@/lib/db/client";
+import { mirrorRsvpToSheet } from "@/lib/rsvp-sheet-mirror";
 
-const RSVP_URL = process.env.GOOGLE_APPS_SCRIPT_RSVP_URL ?? "";
-const RSVP_TIMEOUT_MS = 30_000; // Google Apps Script pode demorar em cold start
-
-// Rate limit: 5 requests per minute per IP (in-memory, resets on server restart)
-const rateLimitMap = new Map<string, number[]>();
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 5;
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const timestamps = rateLimitMap.get(ip) ?? [];
-  const recent = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-
-  if (recent.length >= RATE_LIMIT_MAX) {
-    return true;
-  }
-  recent.push(now);
-  rateLimitMap.set(ip, recent);
-  return false;
-}
-
-function parseGasResponse(text: string) {
-  try {
-    return JSON.parse(text) as {
-      success?: boolean;
-      error?: string;
-      message?: string;
-    };
-  } catch {
-    return null;
-  }
-}
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  if (!RSVP_URL) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Confirmação de presença em breve. Volte em alguns dias!",
-      },
-      { status: 503 }
-    );
-  }
-
   const ip = getClientIp(request);
-  if (isRateLimited(ip)) {
+  if (isRsvpRateLimited(ip)) {
     return NextResponse.json(
       {
         success: false,
         error: "Muitas tentativas. Aguarde um minuto e tente novamente.",
       },
-      { status: 429 }
+      { status: 429 },
     );
   }
 
   if (!isAllowedOrigin(request)) {
     return NextResponse.json(
       { success: false, error: "Origem não permitida." },
-      { status: 403 }
+      { status: 403 },
+    );
+  }
+
+  if (!getDb()) {
+    return NextResponse.json(
+      { success: false, error: "Tente de novo em instantes." },
+      { status: 503 },
     );
   }
 
   try {
-    const body = await request.json();
-    const { nome, email, nomeAcompanhante, microonibus } = body;
-
-    const trimmedNome = typeof nome === "string" ? nome.trim() : "";
-    if (!trimmedNome) {
-      return NextResponse.json(
-        { success: false, error: "Por favor, informe seu nome completo." },
-        { status: 400 }
-      );
-    }
-
-    const parts = trimmedNome.split(/\s+/).filter(Boolean);
-    if (parts.length < 2) {
-      return NextResponse.json(
-        { success: false, error: "Por favor, informe nome e sobrenome." },
-        { status: 400 }
-      );
-    }
-
-    const trimmedEmail = typeof email === "string" ? email.trim() : null;
-    if (trimmedEmail) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(trimmedEmail)) {
-        return NextResponse.json(
-          { success: false, error: "Informe um e-mail válido." },
-          { status: 400 }
-        );
-      }
-    }
-
-    const payload = {
-      nome: trimmedNome,
-      email: trimmedEmail || null,
-      nomeAcompanhante:
-        typeof nomeAcompanhante === "string" && nomeAcompanhante.trim()
-          ? nomeAcompanhante.trim()
-          : null,
-      microonibus:
-        microonibus === "sim" || microonibus === "nao" ? microonibus : null,
+    const body = (await request.json()) as {
+      name?: unknown;
+      attending?: unknown;
+      guestId?: unknown;
     };
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), RSVP_TIMEOUT_MS);
-
-    const response = await fetch(RSVP_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-      redirect: "follow",
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-    const text = await response.text();
-    const result = parseGasResponse(text);
-
-    if (response.ok && result?.success !== false) {
-      return NextResponse.json(result ?? { success: true });
-    }
-
-    const errorMessage =
-      result?.error ??
-      result?.message ??
-      (response.status === 403
-        ? "Acesso negado. Verifique a configuração do script."
-        : response.status >= 500
-          ? "O serviço está temporariamente indisponível. Tente novamente em alguns minutos."
-          : "Erro ao confirmar. Tente novamente.");
-
-    return NextResponse.json(
-      { success: false, error: errorMessage },
-      { status: response.status >= 400 ? response.status : 502 }
-    );
-  } catch (err) {
-    if (err instanceof Error && err.name === "AbortError") {
+    if (typeof body.attending !== "boolean") {
       return NextResponse.json(
-        {
-          success: false,
-          error:
-            "O servidor demorou para responder. Tente novamente em instantes.",
-        },
-        { status: 504 }
+        { success: false, error: "Escolha se você vai ou não vai." },
+        { status: 400 },
       );
     }
-    console.error("[rsvp]", err);
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          "Erro de conexão. Verifique sua internet e tente novamente.",
-      },
-      { status: 500 }
-    );
+
+    const name = typeof body.name === "string" ? body.name : "";
+    const guestId = typeof body.guestId === "string" ? body.guestId : null;
+
+    await applyPublicRsvp({
+      name,
+      attending: body.attending,
+      guestId,
+    });
+
+    void mirrorRsvpToSheet({ nome: name.trim(), attending: body.attending });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("[rsvp]");
+    const message =
+      error instanceof Error && error.message.startsWith("Informe")
+        ? error.message
+        : error instanceof Error && error.message.startsWith("Preencha")
+          ? error.message
+          : error instanceof Error && error.message.includes("máximo")
+            ? error.message
+            : "Tente de novo em instantes.";
+    const status = message === "Tente de novo em instantes." ? 503 : 400;
+    return NextResponse.json({ success: false, error: message }, { status });
   }
 }

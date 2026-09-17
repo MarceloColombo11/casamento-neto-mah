@@ -9,6 +9,7 @@
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "test:guests": "node --experimental-strip-types --test lib/content/guest-name.test.ts lib/content/rsvp-match.test.ts",
     "drive:oauth": "node --env-file=.env.local scripts/get-google-refresh-token.mjs"
   },
   "dependencies": {

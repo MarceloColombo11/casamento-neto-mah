@@ -15,6 +15,13 @@
       "when": 1789661130310,
       "tag": "0001_melodic_shaman",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789664105123,
+      "tag": "0002_wet_kid_colt",
+      "breakpoints": true
     }
   ]
 }

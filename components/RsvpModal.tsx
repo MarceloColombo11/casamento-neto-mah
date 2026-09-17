@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,43 +11,39 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { toast } from "sonner";
 import { Loader2, Heart, PartyPopper } from "lucide-react";
 import { fireConfettiCannon } from "@/lib/confetti";
+import { normalizePersonName } from "@/lib/content/guest-name";
 
 const RSVP_ENDPOINT = "/api/rsvp";
 
-interface RsvpModalProps {
+type Suggestion = { id: string; fullName: string };
+
+type RsvpModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
+};
 
 export function RsvpModal({ open, onOpenChange }: RsvpModalProps) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [formData, setFormData] = useState({
-    nome: "",
-    email: "",
-    nomeAcompanhante: "",
-    microonibus: "" as "" | "sim" | "nao",
-  });
+  const [nome, setNome] = useState("");
+  const [guestId, setGuestId] = useState<string | null>(null);
+  const [attending, setAttending] = useState<"" | "sim" | "nao">("");
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [nomeError, setNomeError] = useState<string | null>(null);
-  const [emailError, setEmailError] = useState<string | null>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
+  const selectedRef = useRef<Suggestion | null>(null);
 
   useEffect(() => {
     if (open) {
       setSuccess(false);
       setNomeError(null);
-      setEmailError(null);
-      const t = setTimeout(() => firstInputRef.current?.focus({ preventScroll: true }), 50);
+      const t = setTimeout(
+        () => firstInputRef.current?.focus({ preventScroll: true }),
+        50,
+      );
       return () => clearTimeout(t);
     }
   }, [open]);
@@ -56,31 +52,48 @@ export function RsvpModal({ open, onOpenChange }: RsvpModalProps) {
     if (success) fireConfettiCannon();
   }, [success]);
 
-  const validateNome = (nome: string) => {
-    const trimmed = nome.trim();
-    if (!trimmed) return "Por favor, informe seu nome completo.";
-    const parts = trimmed.split(/\s+/).filter(Boolean);
-    if (parts.length < 2) return "Por favor, informe nome e sobrenome.";
-    return null;
-  };
+  useEffect(() => {
+    const selected = selectedRef.current;
+    if (selected && nome === selected.fullName) {
+      setSuggestions([]);
+      return;
+    }
+    const needle = normalizePersonName(nome);
+    if (needle.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+    const controller = new AbortController();
+    const handle = window.setTimeout(() => {
+      fetch(`/api/rsvp/suggest?q=${encodeURIComponent(nome)}`, {
+        signal: controller.signal,
+      })
+        .then((response) => response.json() as Promise<{ guests?: Suggestion[] }>)
+        .then((data) => setSuggestions(Array.isArray(data.guests) ? data.guests : []))
+        .catch(() => {
+          if (!controller.signal.aborted) setSuggestions([]);
+        });
+    }, 200);
+    return () => {
+      controller.abort();
+      window.clearTimeout(handle);
+    };
+  }, [nome]);
 
-  const validateEmail = (email: string) => {
-    if (!email.trim()) return null;
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!re.test(email)) return "Informe um e-mail válido.";
-    return null;
-  };
+  const canSubmit =
+    nome.trim().split(/\s+/).filter(Boolean).length >= 2 &&
+    (attending === "sim" || attending === "nao");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const nErr = validateNome(formData.nome);
-    const eErr = validateEmail(formData.email);
-    setNomeError(nErr);
-    setEmailError(eErr);
-
-    if (nErr || eErr) {
-      if (nErr) toast.error(nErr);
-      else if (eErr) toast.error(eErr);
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const parts = nome.trim().split(/\s+/).filter(Boolean);
+    if (parts.length < 2) {
+      setNomeError("Por favor, informe nome e sobrenome.");
+      toast.error("Por favor, informe nome e sobrenome.");
+      return;
+    }
+    if (attending !== "sim" && attending !== "nao") {
+      toast.error("Escolha se você vai ou não vai.");
       return;
     }
 
@@ -90,17 +103,22 @@ export function RsvpModal({ open, onOpenChange }: RsvpModalProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          nome: formData.nome.trim(),
-          email: formData.email.trim() || null,
-          nomeAcompanhante: formData.nomeAcompanhante.trim() || null,
-          microonibus: formData.microonibus || null,
+          name: nome.trim(),
+          attending: attending === "sim",
+          guestId,
         }),
       });
-
-      const result = await response.json().catch(() => ({}));
+      const result = (await response.json().catch(() => ({}))) as {
+        success?: boolean;
+        error?: string;
+      };
       if (response.ok && result?.success !== false) {
         setSuccess(true);
-        setFormData({ nome: "", email: "", nomeAcompanhante: "", microonibus: "" });
+        setNome("");
+        selectedRef.current = null;
+        setGuestId(null);
+        setAttending("");
+        setSuggestions([]);
       } else {
         toast.error(result?.error ?? "Erro ao confirmar. Tente novamente.");
       }
@@ -111,13 +129,8 @@ export function RsvpModal({ open, onOpenChange }: RsvpModalProps) {
     }
   };
 
-  const handleClose = () => {
-    if (success) setSuccess(false);
-    onOpenChange(false);
-  };
-
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="max-h-[90dvh] max-w-md overflow-y-auto pb-safe sm:max-w-md"
         aria-describedby={success ? "rsvp-success-desc" : "rsvp-form-desc"}
@@ -130,7 +143,7 @@ export function RsvpModal({ open, onOpenChange }: RsvpModalProps) {
           <DialogDescription id={success ? "rsvp-success-desc" : "rsvp-form-desc"}>
             {success
               ? "Obrigado por nos honrar com sua presença neste dia tão especial!"
-              : "Preencha o formulário para confirmar sua presença no nosso casamento."}
+              : "Digite seu nome e diga se você vem. Se o nome não estiver na lista, mesmo assim registramos."}
           </DialogDescription>
         </DialogHeader>
 
@@ -149,104 +162,103 @@ export function RsvpModal({ open, onOpenChange }: RsvpModalProps) {
             <Button
               size="lg"
               className="min-h-[44px] w-full min-w-[44px] rounded-xl bg-sage px-6 text-brown transition-transform active:scale-[0.98] hover:bg-gold"
-              onClick={handleClose}
+              onClick={() => onOpenChange(false)}
             >
               Fechar
             </Button>
           </div>
         ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-5 pb-2"
-            noValidate
-          >
+          <form onSubmit={handleSubmit} className="space-y-5 pb-2" noValidate>
             <div className="space-y-2">
               <Label htmlFor="rsvp-nome">Nome completo *</Label>
               <Input
                 ref={firstInputRef}
                 id="rsvp-nome"
-                value={formData.nome}
-                onChange={(e) => {
-                  setFormData((p) => ({ ...p, nome: e.target.value }));
+                value={nome}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setNome(value);
+                  const selected = selectedRef.current;
+                  if (!selected || value !== selected.fullName) {
+                    selectedRef.current = null;
+                    setGuestId(null);
+                  }
                   if (nomeError) setNomeError(null);
                 }}
                 placeholder="Seu nome completo"
                 required
                 disabled={loading}
                 className="min-h-[44px]"
+                autoComplete="name"
                 aria-describedby={nomeError ? "rsvp-nome-error" : undefined}
                 aria-invalid={!!nomeError}
+                aria-autocomplete="list"
               />
-              {nomeError && (
+              {suggestions.length > 0 ? (
+                <ul className="overflow-hidden rounded-md border border-olive/20 bg-white">
+                  {suggestions.map((item) => (
+                    <li key={item.id}>
+                      <button
+                        type="button"
+                        className="min-h-11 w-full px-3 py-2 text-left text-sm text-navy hover:bg-cream"
+                        onClick={() => {
+                          selectedRef.current = item;
+                          setNome(item.fullName);
+                          setGuestId(item.id);
+                          setSuggestions([]);
+                        }}
+                      >
+                        {item.fullName}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              {nomeError ? (
                 <p id="rsvp-nome-error" className="text-sm text-destructive" role="alert">
                   {nomeError}
                 </p>
-              )}
+              ) : null}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="rsvp-email">E-mail</Label>
-              <Input
-                id="rsvp-email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => {
-                  setFormData((p) => ({ ...p, email: e.target.value }));
-                  if (emailError) setEmailError(null);
-                }}
-                placeholder="seu@email.com"
-                disabled={loading}
-                className="min-h-[44px]"
-                aria-describedby={emailError ? "rsvp-email-error" : undefined}
-                aria-invalid={!!emailError}
-              />
-              {emailError && (
-                <p id="rsvp-email-error" className="text-sm text-destructive" role="alert">
-                  {emailError}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="rsvp-nome-acompanhante">Nome do acompanhante</Label>
-              <Input
-                id="rsvp-nome-acompanhante"
-                value={formData.nomeAcompanhante}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, nomeAcompanhante: e.target.value }))
-                }
-                placeholder="Nome completo do acompanhante (opcional)"
-                disabled={loading}
-                className="min-h-[44px]"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="rsvp-microonibus">Deseja microônibus?</Label>
-              <Select
-                value={formData.microonibus}
-                onValueChange={(v) =>
-                  setFormData((p) => ({ ...p, microonibus: (v ?? "") as "" | "sim" | "nao" }))
-                }
-                disabled={loading}
-              >
-                <SelectTrigger className="min-h-[44px] w-full">
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sim">Sim</SelectItem>
-                  <SelectItem value="nao">Não</SelectItem>
-                </SelectContent>
-              </Select>
-              <span className="block text-sm text-muted-foreground">
-                O microônibus será por conta dos noivos.
-              </span>
+              <p className="text-sm font-medium">Você vem? *</p>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  aria-pressed={attending === "sim"}
+                  className={`min-h-11 ${
+                    attending === "sim"
+                      ? "border-gold bg-gold/20 text-navy"
+                      : "text-navy"
+                  }`}
+                  disabled={loading}
+                  onClick={() => setAttending("sim")}
+                >
+                  Vou
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  aria-pressed={attending === "nao"}
+                  className={`min-h-11 ${
+                    attending === "nao"
+                      ? "border-gold bg-gold/20 text-navy"
+                      : "text-navy"
+                  }`}
+                  disabled={loading}
+                  onClick={() => setAttending("nao")}
+                >
+                  Não vou
+                </Button>
+              </div>
             </div>
 
             <Button
               type="submit"
               className="w-full min-h-[44px] rounded-xl bg-sage py-3 text-base text-brown transition-transform active:scale-[0.98] hover:bg-gold disabled:opacity-70"
-              disabled={loading}
+              disabled={loading || !canSubmit}
             >
               {loading ? (
                 <>

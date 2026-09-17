@@ -13,6 +13,15 @@ export default function AdminHomePage() {
       <ul className="space-y-3">
         <li>
           <Link
+            href="/admin/convidados"
+            className="flex min-h-14 items-center justify-between border border-beige px-4 py-3 font-heading text-xl hover:border-gold"
+          >
+            Convidados
+            <span className="text-sm font-sans text-navy/60">Lista e RSVP</span>
+          </Link>
+        </li>
+        <li>
+          <Link
             href="/admin/presentes"
             className="flex min-h-14 items-center justify-between border border-beige px-4 py-3 font-heading text-xl hover:border-gold"
           >

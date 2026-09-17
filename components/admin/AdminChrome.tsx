@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
+  { href: "/admin/convidados", label: "Convidados" },
   { href: "/admin/presentes", label: "Presentes" },
   { href: "/admin/fotos", label: "Fotos" },
   { href: "/admin/textos", label: "Textos" },
