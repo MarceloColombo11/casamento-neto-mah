@@ -39,6 +39,18 @@ export async function GET(
       return NextResponse.redirect(new URL(row.staticPath, request.url), 302);
     }
 
+    if (row.source === "db" && row.bytes) {
+      const body = new Uint8Array(row.bytes);
+      return new NextResponse(body, {
+        status: 200,
+        headers: {
+          "Content-Type": row.mime,
+          "Cache-Control": "public, max-age=3600",
+          "X-Content-Type-Options": "nosniff",
+        },
+      });
+    }
+
     if (row.source === "drive" && row.driveFileId) {
       const file = await downloadDriveFile(row.driveFileId);
       if (!file.ok) {

@@ -34,7 +34,7 @@ Abrir `http://localhost:3000/admin/login` (não aparece no menu).
 1. **Sem sessão:** `/admin` e `/admin/presentes` caem no login. Home pública continua igual (seed ainda não rodou **ou** já seedou os exemplos — conferir spec B).
 2. **Login errado:** mensagem genérica. 6ª tentativa em 15 min continua recusada.
 3. **Login certo:** painel com Presentes, Fotos, Textos em < 10s. Viewport 360px: áreas tocáveis.
-4. **Presente:** criar com título, descrição, Pix, imagem (jpeg < 8MB). Abrir janela anônima na home → item visível; abrir o card → Pix copia. Editar; reordenar com setas; remover com dialog — some de vez.
+4. **Presente:** criar com título, descrição, Pix, imagem (jpeg < 4MB). Abrir janela anônima na home → item visível; abrir o card → Pix copia. Editar; reordenar com setas; remover com dialog — some de vez.
 5. **Fotos:** capa recusa a 9ª; história a 13ª. Remover todas as da capa → home não quebra (fundo simples).
 6. **Textos:** adicionar parágrafo em Traje; recusar salvar Nossa História sem parágrafos; home mostra o texto novo.
 7. **Sessão 8h:** não precisa esperar — inspecionar cookie `Max-Age=28800` e um teste unitário/manual de `exp` no passado → redirect login.

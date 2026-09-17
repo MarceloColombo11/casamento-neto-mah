@@ -1,30 +1,20 @@
 # Contract: Mídia do site
 
-Cliente **não** monta URL do Drive nem envia Bearer Google. Só PUT na `uploadUrl` de uso único devolvida pelo servidor (padrão já usado no álbum de convidados).
+Uploads do painel vão para o Neon (`site_media.bytes`). O cliente não fala com o Google Drive. O álbum dos convidados continua no Drive.
 
-## `POST /api/admin/media/session`
+## `POST /api/admin/media/upload`
 
 **Auth:** cookie `admin_session`.
 
-**Body JSON:** `{ fileName, mimeType, size, origin }`
+**Body:** `multipart/form-data` com campo `file`.
 
-**Regras:** mime ∈ jpeg/png/webp; 0 < size ≤ 8_388_608; origin permitido (mesmo helper do RSVP).
+**Regras:** mime ∈ jpeg/png/webp; 0 < size ≤ 4_194_304; origin permitido (mesmo helper do RSVP).
 
-**200:** `{ uploadUrl, pendingToken }`
+**200:** `{ mediaId, publicUrl }` onde `publicUrl` = `/api/site-media/{mediaId}`.
 
-`pendingToken` é HMAC de `{ driveFileId or sessionId, exp: now+10min }` — o complete valida.
+Grava `site_media` com `source=db` e os bytes da imagem.
 
-**401/403/429:** sem sessão / origin / rate.
-
-## `POST /api/admin/media/complete`
-
-**Auth:** cookie.
-
-**Body JSON:** `{ pendingToken }`
-
-Servidor confirma o arquivo no Drive, INSERT `site_media` source=drive, retorna `{ mediaId, publicUrl }` onde `publicUrl` = `/api/site-media/{mediaId}`.
-
-Se o PUT do cliente não terminou: 409 `{ error: "Upload incompleto. Tente de novo." }` — não cria gift/photo.
+**401/403/400:** sem sessão / origin / arquivo inválido.
 
 ## `GET /api/site-media/[id]`
 
@@ -34,7 +24,9 @@ Se o PUT do cliente não terminou: 409 `{ error: "Upload incompleto. Tente de no
 
 **404:** id inexistente.
 
-**502:** Drive indisponível para source=drive — corpo vazio/erro; a página pública deve ter `onError`/fundo simples, não quebrar a home.
+**502:** Drive indisponível para source=drive legado — corpo vazio/erro; a página pública deve ter `onError`/fundo simples, não quebrar a home.
+
+**db:** devolve os bytes guardados no Neon.
 
 **static:** serve/redirect o path em `public/`.
 

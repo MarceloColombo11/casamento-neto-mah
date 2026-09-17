@@ -105,7 +105,7 @@ export function GiftForm({ gift, onDone }: GiftFormProps) {
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="photo">Foto (opcional)</Label>
+        <Label htmlFor="photo">Foto (opcional, até 4 MB)</Label>
         <Input
           id="photo"
           ref={fileRef}

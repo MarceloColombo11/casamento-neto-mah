@@ -8,6 +8,13 @@
       "when": 1789657421907,
       "tag": "0000_admin_content",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789661130310,
+      "tag": "0001_melodic_shaman",
+      "breakpoints": true
     }
   ]
 }

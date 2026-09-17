@@ -110,4 +110,4 @@ A área `/admin/login` **não** aparece no menu. O casal recebe o endereço por 
 
 O primeiro acesso com banco configurado copia o conteúdo atual do site (presentes de exemplo, fotos da capa e textos). Depois disso, o casal edita pelo painel. Sem banco, o site público continua no fallback dos JSON/`public`; salvar no painel mostra erro.
 
-Fotos novas do painel usam o mesmo Google Drive do álbum de convidados (até 8 MB, JPEG/PNG/WebP).
+Fotos novas do painel (presentes, capa e história) ficam no Neon, até 4 MB, JPEG/PNG/WebP. O álbum dos convidados continua no Google Drive.

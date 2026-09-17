@@ -4,7 +4,7 @@ Persistência: Neon Postgres. Tipos TypeScript espelham o schema Drizzle. Remoç
 
 ## Enums
 
-- `media_source`: `static` | `drive`
+- `media_source`: `static` | `drive` | `db`
 - `photo_collection`: `hero` | `historia`
 - `text_block_key`: `hero_message` | `grande_dia` | `traje` | `nossa_historia` | `presentes_intro`
 
@@ -17,9 +17,10 @@ Arquivo de imagem referenciável.
 | id | uuid PK | gerado no servidor |
 | source | media_source | obrigatório |
 | static_path | text null | obrigatório se source=static; path público `/images/...` |
-| drive_file_id | text null | obrigatório se source=drive |
+| drive_file_id | text null | obrigatório se source=drive (legado) |
 | mime | text | `image/jpeg` \| `image/png` \| `image/webp` |
-| byte_size | int | 1…8_388_608 |
+| byte_size | int | 1…4_194_304 nos uploads novos |
+| bytes | bytea null | obrigatório se source=db |
 | created_at | timestamptz | default now() |
 
 **URL pública:** `/api/site-media/{id}` (UUID, não sequencial).
@@ -37,7 +38,7 @@ Arquivo de imagem referenciável.
 | sort_order | int | ≥ 0, único na prática via rewrite da lista |
 | created_at / updated_at | timestamptz | |
 
-**Delete:** `DELETE FROM gifts WHERE id=?` + mídia órfã Drive apagada se não referenciada.
+**Delete:** `DELETE FROM gifts WHERE id=?` + mídia órfã apagada se não referenciada.
 
 **Ordem:** action recebe array de ids; rewrite `sort_order` 0..n-1 numa transação.
 

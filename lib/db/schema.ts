@@ -1,6 +1,7 @@
 import {
   bigint,
   boolean,
+  customType,
   integer,
   jsonb,
   pgEnum,
@@ -10,7 +11,30 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-export const mediaSourceEnum = pgEnum("media_source", ["static", "drive"]);
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+  dataType() {
+    return "bytea";
+  },
+  toDriver(value) {
+    return value;
+  },
+  fromDriver(value) {
+    if (value == null) return value as unknown as Buffer;
+    if (Buffer.isBuffer(value)) return value;
+    if (value instanceof Uint8Array) return Buffer.from(value);
+    if (typeof value === "string") {
+      if (value.startsWith("\\x")) return Buffer.from(value.slice(2), "hex");
+      return Buffer.from(value, "base64");
+    }
+    throw new Error("Imagem inválida no banco.");
+  },
+});
+
+export const mediaSourceEnum = pgEnum("media_source", [
+  "static",
+  "drive",
+  "db",
+]);
 export const photoCollectionEnum = pgEnum("photo_collection", [
   "hero",
   "historia",
@@ -23,6 +47,7 @@ export const siteMedia = pgTable("site_media", {
   driveFileId: text("drive_file_id"),
   mime: text("mime").notNull(),
   byteSize: integer("byte_size").notNull(),
+  bytes: bytea("bytes"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
