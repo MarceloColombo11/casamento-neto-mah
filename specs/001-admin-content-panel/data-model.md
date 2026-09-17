@@ -32,7 +32,7 @@ Arquivo de imagem referenciável.
 | id | uuid PK | |
 | title | text | 1…120, trim, obrigatório |
 | description | text | 1…2000, obrigatório |
-| pix | text null | vazio ou 8…77 chars |
+| pix | text null | vazio ou Pix copia e cola (começa com `000201`, contém `BR.GOV.BCB.PIX`, até 512 chars) |
 | suggested_value | text null | 0…40 chars (ex. `R$ 100,00`) |
 | media_id | uuid null FK site_media | on delete set null |
 | sort_order | int | ≥ 0, único na prática via rewrite da lista |

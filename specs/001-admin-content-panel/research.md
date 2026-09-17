@@ -67,7 +67,7 @@
 
 ## 7. Pix e presentes públicos
 
-**Decision:** Lista pública continua sem Pix no HTML da grade (como hoje: `chavePix` omitido no map). `GET /api/presentes/[id]` lê `gifts.pix` no banco. Validação ao salvar: 8–77 caracteres depois do trim, ou vazio.
+**Decision:** Lista pública continua sem Pix no HTML da grade (como hoje: `chavePix` omitido no map). `GET /api/presentes/[id]` lê `gifts.pix` no banco. Validação ao salvar: vazio ou Pix copia e cola (BR Code, começa com `000201`, contém `BR.GOV.BCB.PIX`, até 512 caracteres).
 
 **Rationale:** FR-008. Substitui `fs.readFileSync` em `app/api/presentes/[id]/route.ts`. GiftCard hoje ignora `presente.imagem` e usa `/imagensPresentes/${id}.jpeg` — o plano corrige para a URL gerida.
 

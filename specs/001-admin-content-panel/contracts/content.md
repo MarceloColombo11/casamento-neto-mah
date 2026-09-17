@@ -11,7 +11,7 @@ Retorna `{ id, title, description, pix, suggestedValue, imageUrl, sortOrder }[]`
 ### `createGift(formData)`
 
 Campos: `title`, `description`, `pix?`, `suggestedValue?`, `mediaId?`.  
-Rejeita title/description vazios. Pix 8–77 ou vazio.  
+Rejeita title/description vazios. Pix: vazio ou código copia e cola (BR Code, até 512 caracteres).  
 Insert no fim da lista (`max(sort_order)+1`).
 
 ### `updateGift(formData)`

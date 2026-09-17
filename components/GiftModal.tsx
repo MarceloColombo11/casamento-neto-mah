@@ -42,7 +42,7 @@ function GiftPixPanel({ giftId }: { giftId: string }) {
       .catch(() => {
         if (cancelled) return;
         setErrorPix(true);
-        toast.error("Erro ao carregar chave Pix. Tente novamente.");
+        toast.error("Erro ao carregar o Pix. Tente novamente.");
       })
       .finally(() => {
         if (!cancelled) setLoadingPix(false);
@@ -57,7 +57,7 @@ function GiftPixPanel({ giftId }: { giftId: string }) {
     if (!chavePix) return;
     navigator.clipboard.writeText(chavePix);
     setCopied(true);
-    toast.success("Chave copiada! Cole no app do seu banco.");
+    toast.success("Código Pix copiado! Cole no app do banco.");
     window.setTimeout(() => setCopied(false), 2000);
   };
 
@@ -74,26 +74,26 @@ function GiftPixPanel({ giftId }: { giftId: string }) {
         </div>
       ) : errorPix ? (
         <p className="text-sm text-red-600">
-          Não foi possível carregar a chave Pix.
+          Não foi possível carregar o Pix.
         </p>
       ) : chavePix ? (
         <>
           <QRCodeSVG
             value={chavePix}
-            size={160}
+            size={176}
             level="M"
             className="rounded-lg"
           />
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-start">
-            <code className="min-w-0 overflow-x-auto whitespace-nowrap rounded bg-white px-3 py-2 text-xs text-olive">
+            <code className="min-w-0 break-all rounded bg-white px-3 py-2 text-[11px] leading-snug text-olive">
               {chavePix}
             </code>
             <Button
               variant="outline"
               size="icon"
-              className="shrink-0"
+              className="shrink-0 self-end sm:self-start"
               onClick={handleCopyPix}
-              aria-label="Copiar chave Pix"
+              aria-label="Copiar código Pix"
             >
               {copied ? (
                 <Check className="size-4 text-green-600" />
@@ -103,7 +103,7 @@ function GiftPixPanel({ giftId }: { giftId: string }) {
             </Button>
           </div>
           <p className="break-words text-xs text-olive">
-            Copie a chave e cole no app do seu banco para pagar via Pix.
+            Escaneie o QR ou copie o código e cole no app do banco.
           </p>
         </>
       ) : null}
@@ -122,7 +122,7 @@ export function GiftModal({ presente, open, onOpenChange }: GiftModalProps) {
             {presente.nome}
           </DialogTitle>
           <DialogDescription className="sr-only">
-            Detalhes do presente e pagamento via Pix com QR Code e chave para
+            Detalhes do presente e pagamento via Pix com QR Code e código para
             copiar.
           </DialogDescription>
         </DialogHeader>

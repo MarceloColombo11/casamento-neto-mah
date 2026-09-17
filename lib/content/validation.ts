@@ -10,8 +10,7 @@ export const HISTORIA_PHOTO_LIMIT = 12;
 
 export const TITLE_MAX = 120;
 export const DESCRIPTION_MAX = 2000;
-export const PIX_MIN = 8;
-export const PIX_MAX = 77;
+export const PIX_MAX = 512;
 export const VALUE_MAX = 40;
 export const SCALAR_TEXT_MAX = 500;
 export const PARAGRAPH_MAX = 2000;
@@ -68,15 +67,18 @@ export function trimOptional(
 }
 
 export function validatePix(value: unknown): ValidationResult {
-  const trimmed = asString(value).trim();
-  if (!trimmed) return { ok: true, value: "" };
-  if (trimmed.length < PIX_MIN || trimmed.length > PIX_MAX) {
+  const compact = asString(value).replace(/\s+/g, "");
+  if (!compact) return { ok: true, value: "" };
+  const looksLikeCopiaCola =
+    compact.startsWith("000201") && compact.includes("BR.GOV.BCB.PIX");
+  if (!looksLikeCopiaCola || compact.length > PIX_MAX) {
     return {
       ok: false,
-      error: `A chave Pix precisa ter entre ${PIX_MIN} e ${PIX_MAX} caracteres, ou ficar vazia.`,
+      error:
+        "Cole o código Pix copia e cola gerado pelo banco, ou deixe vazio.",
     };
   }
-  return { ok: true, value: trimmed };
+  return { ok: true, value: compact };
 }
 
 export function validateSiteImageFile(input: {

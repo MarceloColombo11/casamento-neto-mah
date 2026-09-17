@@ -87,12 +87,14 @@ export function GiftForm({ gift, onDone }: GiftFormProps) {
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="pix">Chave Pix (opcional)</Label>
-        <Input
+        <Label htmlFor="pix">Pix copia e cola (opcional)</Label>
+        <textarea
           id="pix"
           name="pix"
           defaultValue={gift?.pix}
-          className={adminFieldClass}
+          spellCheck={false}
+          placeholder="Cole o código gerado pelo banco, o que começa com 000201…"
+          className={`${adminTextareaClass} font-mono text-sm`}
         />
       </div>
       <div className="space-y-2">
