@@ -11,7 +11,18 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+function byteaFromDriver(value: unknown): Buffer | null {
+  if (value == null) return null;
+  if (Buffer.isBuffer(value)) return value;
+  if (value instanceof Uint8Array) return Buffer.from(value);
+  if (typeof value === "string") {
+    if (value.startsWith("\\x")) return Buffer.from(value.slice(2), "hex");
+    return Buffer.from(value, "base64");
+  }
+  throw new Error("Imagem inválida no banco.");
+}
+
+const bytea = customType<{ data: Buffer | null; driverData: unknown }>({
   dataType() {
     return "bytea";
   },
@@ -19,14 +30,7 @@ const bytea = customType<{ data: Buffer; driverData: Buffer }>({
     return value;
   },
   fromDriver(value) {
-    if (value == null) return value as unknown as Buffer;
-    if (Buffer.isBuffer(value)) return value;
-    if (value instanceof Uint8Array) return Buffer.from(value);
-    if (typeof value === "string") {
-      if (value.startsWith("\\x")) return Buffer.from(value.slice(2), "hex");
-      return Buffer.from(value, "base64");
-    }
-    throw new Error("Imagem inválida no banco.");
+    return byteaFromDriver(value);
   },
 });
 
