@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   createGuestAction,
@@ -17,8 +17,11 @@ import type {
   AdminGuest,
   AdminUnmatched,
   GuestBoard,
-  GuestStatus,
 } from "@/lib/content/guests";
+import {
+  guestStatusTag,
+  unmatchedAttendanceTag,
+} from "@/lib/content/guest-status";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,26 +33,38 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  adminFieldClass,
-} from "@/components/admin/field-classes";
+import { adminFieldClass } from "@/components/admin/field-classes";
+
+const tableFieldClass =
+  "h-11 min-h-11 w-full min-w-0 rounded-md border border-beige bg-white px-2 text-sm text-navy outline-none placeholder:text-navy/40 focus-visible:border-gold focus-visible:ring-3 focus-visible:ring-gold/40";
 
 type GuestPanelProps = {
   board: GuestBoard;
 };
 
-function statusLabel(status: GuestStatus): string {
-  if (status === "confirmed") return "Confirmou";
-  if (status === "declined") return "Não vai";
-  return "Ainda não respondeu";
+function StatusTag({
+  label,
+  className,
+}: {
+  label: string;
+  className: string;
+}) {
+  return (
+    <span
+      className={`inline-flex min-h-6 items-center rounded-full px-2.5 text-xs font-medium ${className}`}
+    >
+      {label}
+    </span>
+  );
 }
 
 export function GuestPanel({ board }: GuestPanelProps) {
   const router = useRouter();
+  const nameRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
+  const [groupFilter, setGroupFilter] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [creating, setCreating] = useState(false);
   const [creatingGroup, setCreatingGroup] = useState(false);
   const [editing, setEditing] = useState<AdminGuest | null>(null);
   const [toDelete, setToDelete] = useState<AdminGuest | null>(null);
@@ -57,17 +72,22 @@ export function GuestPanel({ board }: GuestPanelProps) {
   const [toDiscard, setToDiscard] = useState<AdminUnmatched | null>(null);
   const [fullName, setFullName] = useState("");
   const [groupId, setGroupId] = useState("");
+  const [editName, setEditName] = useState("");
+  const [editGroupId, setEditGroupId] = useState("");
   const [groupLabel, setGroupLabel] = useState("");
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    if (!needle) return board.guests;
-    return board.guests.filter((guest) =>
-      guest.fullName.toLowerCase().includes(needle),
-    );
-  }, [board.guests, query]);
+    return board.guests.filter((guest) => {
+      if (needle && !guest.fullName.toLowerCase().includes(needle)) return false;
+      if (groupFilter && guest.groupId !== groupFilter) return false;
+      return true;
+    });
+  }, [board.guests, query, groupFilter]);
 
-  async function run(action: () => Promise<{ ok: true } | { ok: false; error: string } | null>) {
+  async function run(
+    action: () => Promise<{ ok: true } | { ok: false; error: string } | null>,
+  ) {
     setBusy(true);
     setError(null);
     const result = await action();
@@ -87,9 +107,8 @@ export function GuestPanel({ board }: GuestPanelProps) {
     formData.set("groupId", groupId);
     const ok = await run(() => createGuestAction(null, formData));
     if (ok) {
-      setCreating(false);
       setFullName("");
-      setGroupId("");
+      nameRef.current?.focus();
     }
   }
 
@@ -98,8 +117,8 @@ export function GuestPanel({ board }: GuestPanelProps) {
     if (!editing) return;
     const formData = new FormData();
     formData.set("id", editing.id);
-    formData.set("fullName", fullName);
-    formData.set("groupId", groupId);
+    formData.set("fullName", editName);
+    formData.set("groupId", editGroupId);
     const ok = await run(() => updateGuestAction(null, formData));
     if (ok) setEditing(null);
   }
@@ -128,7 +147,11 @@ export function GuestPanel({ board }: GuestPanelProps) {
     const formData = new FormData();
     formData.set("id", groupToDelete);
     const ok = await run(() => deleteGuestGroupAction(formData));
-    if (ok) setGroupToDelete(null);
+    if (ok) {
+      if (groupFilter === groupToDelete) setGroupFilter("");
+      if (groupId === groupToDelete) setGroupId("");
+      setGroupToDelete(null);
+    }
   }
 
   async function confirmDiscard() {
@@ -160,8 +183,6 @@ export function GuestPanel({ board }: GuestPanelProps) {
     await run(() => createGuestFromUnmatchedAction(formData));
   }
 
-  const ungrouped = filtered.filter((guest) => !guest.groupId);
-
   return (
     <div className="space-y-8">
       {error ? (
@@ -171,24 +192,35 @@ export function GuestPanel({ board }: GuestPanelProps) {
       ) : null}
 
       <section className="space-y-4">
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button
-            type="button"
-            disabled={busy}
-            className="h-11 min-h-11 bg-gold text-navy hover:bg-gold/90"
-            onClick={() => {
-              setFullName("");
-              setGroupId("");
-              setCreating(true);
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Buscar na lista"
+            className={adminFieldClass}
+          />
+          <select
+            value={groupFilter}
+            onChange={(event) => {
+              const value = event.target.value;
+              setGroupFilter(value);
+              if (value) setGroupId(value);
             }}
+            className={adminFieldClass}
+            aria-label="Filtrar por grupo"
           >
-            Adicionar convidado
-          </Button>
+            <option value="">Todos os grupos</option>
+            {board.groups.map((group) => (
+              <option key={group.id} value={group.id}>
+                {group.label}
+              </option>
+            ))}
+          </select>
           <Button
             type="button"
             disabled={busy}
             variant="outline"
-            className="h-11 min-h-11 border-gold/60 text-navy"
+            className="h-11 min-h-11 shrink-0 border-gold/60 text-navy"
             onClick={() => {
               setGroupLabel("");
               setCreatingGroup(true);
@@ -196,79 +228,147 @@ export function GuestPanel({ board }: GuestPanelProps) {
           >
             Novo grupo
           </Button>
+          {groupFilter ? (
+            <Button
+              type="button"
+              disabled={busy}
+              variant="ghost"
+              className="h-11 min-h-11 shrink-0 text-navy/70"
+              onClick={() => setGroupToDelete(groupFilter)}
+            >
+              Remover grupo
+            </Button>
+          ) : null}
         </div>
-        <Input
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Buscar na lista"
-          className={adminFieldClass}
-        />
 
-        {board.groups.map((group) => {
-          const people = filtered.filter((guest) => guest.groupId === group.id);
-          return (
-            <div key={group.id} className="space-y-2">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="font-heading text-xl">{group.label}</h2>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="h-11 min-h-11 text-navy/70"
-                  disabled={busy}
-                  onClick={() => setGroupToDelete(group.id)}
-                >
-                  Remover grupo
-                </Button>
-              </div>
-              {people.length === 0 ? (
-                <p className="text-sm text-navy/60">Ninguém neste grupo.</p>
-              ) : (
-                people.map((guest) => (
-                  <GuestRow
-                    key={guest.id}
-                    guest={guest}
-                    groups={board.groups}
-                    busy={busy}
-                    onEdit={() => {
-                      setFullName(guest.fullName);
-                      setGroupId(guest.groupId ?? "");
-                      setEditing(guest);
+        <form onSubmit={submitCreate} className="overflow-x-auto border border-beige">
+          <table className="w-full min-w-xl text-left">
+            <thead>
+              <tr className="bg-[#f7f4ef] text-xs font-medium text-navy/60">
+                <th className="px-3 py-2 font-medium">Nome</th>
+                <th className="px-3 py-2 font-medium">Status</th>
+                <th className="px-3 py-2 font-medium">Grupo</th>
+                <th className="px-3 py-2 font-medium">
+                  <span className="sr-only">Ações</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-t border-beige bg-white">
+                <td className="px-2 py-2">
+                  <Input
+                    ref={nameRef}
+                    value={fullName}
+                    onChange={(event) => setFullName(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key !== "Enter") return;
+                      event.preventDefault();
+                      void submitCreate(event);
                     }}
-                    onDelete={() => setToDelete(guest)}
-                    onGroup={(value) => changeGroup(guest.id, value)}
+                    placeholder="Nome e sobrenome"
+                    className={tableFieldClass}
+                    autoComplete="off"
+                    aria-label="Nome do novo convidado"
+                    disabled={busy}
                   />
-                ))
+                </td>
+                <td className="px-3 py-2">
+                  <StatusTag {...guestStatusTag("pending")} />
+                </td>
+                <td className="px-2 py-2">
+                  <select
+                    value={groupId}
+                    onChange={(event) => setGroupId(event.target.value)}
+                    className={tableFieldClass}
+                    aria-label="Grupo do novo convidado"
+                    disabled={busy}
+                  >
+                    <option value="">Sem grupo</option>
+                    {board.groups.map((group) => (
+                      <option key={group.id} value={group.id}>
+                        {group.label}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="px-2 py-2">
+                  <Button
+                    type="submit"
+                    disabled={busy}
+                    className="h-11 min-h-11 bg-gold text-navy hover:bg-gold/90"
+                  >
+                    Incluir
+                  </Button>
+                </td>
+              </tr>
+              {filtered.length === 0 ? (
+                <tr className="border-t border-beige">
+                  <td colSpan={4} className="px-3 py-4 text-sm text-navy/60">
+                    {board.guests.length === 0
+                      ? "A lista ainda está vazia."
+                      : "Ninguém neste filtro."}
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((guest) => {
+                  const tag = guestStatusTag(guest.status);
+                  return (
+                    <tr key={guest.id} className="border-t border-beige">
+                      <td className="px-3 py-2 font-medium text-navy">
+                        {guest.fullName}
+                      </td>
+                      <td className="px-3 py-2">
+                        <StatusTag label={tag.label} className={tag.className} />
+                      </td>
+                      <td className="px-2 py-2">
+                        <select
+                          value={guest.groupId ?? ""}
+                          disabled={busy}
+                          onChange={(event) => changeGroup(guest.id, event.target.value)}
+                          className={tableFieldClass}
+                          aria-label={`Grupo de ${guest.fullName}`}
+                        >
+                          <option value="">Sem grupo</option>
+                          {board.groups.map((group) => (
+                            <option key={group.id} value={group.id}>
+                              {group.label}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td className="px-2 py-2">
+                        <div className="flex gap-1">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="h-11 min-h-11"
+                            disabled={busy}
+                            onClick={() => {
+                              setEditName(guest.fullName);
+                              setEditGroupId(guest.groupId ?? "");
+                              setEditing(guest);
+                            }}
+                          >
+                            Editar
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            className="h-11 min-h-11"
+                            disabled={busy}
+                            onClick={() => setToDelete(guest)}
+                          >
+                            Remover
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
-            </div>
-          );
-        })}
-
-        <div className="space-y-2">
-          <h2 className="font-heading text-xl">Sem grupo</h2>
-          {ungrouped.length === 0 ? (
-            <p className="text-sm text-navy/60">
-              {board.guests.length === 0
-                ? "A lista ainda está vazia."
-                : "Ninguém fora de grupo."}
-            </p>
-          ) : (
-            ungrouped.map((guest) => (
-              <GuestRow
-                key={guest.id}
-                guest={guest}
-                groups={board.groups}
-                busy={busy}
-                onEdit={() => {
-                  setFullName(guest.fullName);
-                  setGroupId(guest.groupId ?? "");
-                  setEditing(guest);
-                }}
-                onDelete={() => setToDelete(guest)}
-                onGroup={(value) => changeGroup(guest.id, value)}
-              />
-            ))
-          )}
-        </div>
+            </tbody>
+          </table>
+        </form>
       </section>
 
       <section className="space-y-3">
@@ -278,42 +378,35 @@ export function GuestPanel({ board }: GuestPanelProps) {
             Nenhuma confirmação fora da lista.
           </p>
         ) : (
-          board.unmatched.map((item) => (
-            <UnmatchedCard
-              key={item.id}
-              item={item}
-              guests={board.guests}
-              busy={busy}
-              onLink={(guestId) => link(item.id, guestId)}
-              onCreate={() => createFrom(item.id)}
-              onDiscard={() => setToDiscard(item)}
-            />
-          ))
+          <div className="overflow-x-auto border border-beige">
+            <table className="w-full min-w-xl text-left">
+              <thead>
+                <tr className="bg-[#f7f4ef] text-xs font-medium text-navy/60">
+                  <th className="px-3 py-2 font-medium">Nome</th>
+                  <th className="px-3 py-2 font-medium">Status</th>
+                  <th className="px-3 py-2 font-medium">Vincular</th>
+                  <th className="px-3 py-2 font-medium">
+                    <span className="sr-only">Ações</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {board.unmatched.map((item) => (
+                  <UnmatchedRow
+                    key={item.id}
+                    item={item}
+                    guests={board.guests}
+                    busy={busy}
+                    onLink={(guestId) => link(item.id, guestId)}
+                    onCreate={() => createFrom(item.id)}
+                    onDiscard={() => setToDiscard(item)}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
-
-      <Dialog open={creating} onOpenChange={(open) => setCreating(open === true)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Adicionar convidado</DialogTitle>
-            <DialogDescription>Uma pessoa por vez, nome e sobrenome.</DialogDescription>
-          </DialogHeader>
-          <form onSubmit={submitCreate} className="space-y-4">
-            <NameAndGroupFields
-              fullName={fullName}
-              groupId={groupId}
-              groups={board.groups}
-              onName={setFullName}
-              onGroup={setGroupId}
-            />
-            <DialogFooter>
-              <Button type="submit" disabled={busy} className="h-11 bg-gold text-navy">
-                Salvar
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
 
       <Dialog open={Boolean(editing)} onOpenChange={(open) => open !== true && setEditing(null)}>
         <DialogContent>
@@ -322,11 +415,11 @@ export function GuestPanel({ board }: GuestPanelProps) {
           </DialogHeader>
           <form onSubmit={submitEdit} className="space-y-4">
             <NameAndGroupFields
-              fullName={fullName}
-              groupId={groupId}
+              fullName={editName}
+              groupId={editGroupId}
               groups={board.groups}
-              onName={setFullName}
-              onGroup={setGroupId}
+              onName={setEditName}
+              onGroup={setEditGroupId}
             />
             <DialogFooter>
               <Button type="submit" disabled={busy} className="h-11 bg-gold text-navy">
@@ -486,56 +579,7 @@ function NameAndGroupFields({
   );
 }
 
-function GuestRow({
-  guest,
-  groups,
-  busy,
-  onEdit,
-  onDelete,
-  onGroup,
-}: {
-  guest: AdminGuest;
-  groups: GuestBoard["groups"];
-  busy: boolean;
-  onEdit: () => void;
-  onDelete: () => void;
-  onGroup: (groupId: string) => void;
-}) {
-  return (
-    <div className="space-y-2 border border-beige px-3 py-3">
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <p className="font-medium text-navy">{guest.fullName}</p>
-          <p className="text-sm text-navy/70">{statusLabel(guest.status)}</p>
-        </div>
-        <div className="flex gap-2">
-          <Button type="button" variant="outline" className="h-11 min-h-11" disabled={busy} onClick={onEdit}>
-            Editar
-          </Button>
-          <Button type="button" variant="ghost" className="h-11 min-h-11" disabled={busy} onClick={onDelete}>
-            Remover
-          </Button>
-        </div>
-      </div>
-      <select
-        value={guest.groupId ?? ""}
-        disabled={busy}
-        onChange={(event) => onGroup(event.target.value)}
-        className={adminFieldClass}
-        aria-label={`Grupo de ${guest.fullName}`}
-      >
-        <option value="">Sem grupo</option>
-        {groups.map((group) => (
-          <option key={group.id} value={group.id}>
-            {group.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-}
-
-function UnmatchedCard({
+function UnmatchedRow({
   item,
   guests,
   busy,
@@ -551,52 +595,61 @@ function UnmatchedCard({
   onDiscard: () => void;
 }) {
   const [guestId, setGuestId] = useState("");
+  const tag = unmatchedAttendanceTag(item.attending);
   return (
-    <div className="space-y-3 border border-beige px-3 py-3">
-      <p className="font-medium text-navy">{item.typedName}</p>
-      <p className="text-sm text-navy/70">{item.attending ? "Vou" : "Não vai"}</p>
-      <select
-        value={guestId}
-        disabled={busy}
-        onChange={(event) => setGuestId(event.target.value)}
-        className={adminFieldClass}
-        aria-label="Vincular a um convidado"
-      >
-        <option value="">Vincular a…</option>
-        {guests.map((guest) => (
-          <option key={guest.id} value={guest.id}>
-            {guest.fullName}
-          </option>
-        ))}
-      </select>
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <Button
-          type="button"
-          className="h-11 min-h-11 bg-gold text-navy"
-          disabled={busy || !guestId}
-          onClick={() => onLink(guestId)}
-        >
-          Vincular
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="h-11 min-h-11"
-          disabled={busy}
-          onClick={onCreate}
-        >
-          Criar convidado
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          className="h-11 min-h-11"
-          disabled={busy}
-          onClick={onDiscard}
-        >
-          Descartar
-        </Button>
-      </div>
-    </div>
+    <tr className="border-t border-beige">
+      <td className="px-3 py-2 font-medium text-navy">{item.typedName}</td>
+      <td className="px-3 py-2">
+        <StatusTag label={tag.label} className={tag.className} />
+      </td>
+      <td className="px-2 py-2">
+        <div className="flex gap-2">
+          <select
+            value={guestId}
+            disabled={busy}
+            onChange={(event) => setGuestId(event.target.value)}
+            className={tableFieldClass}
+            aria-label="Vincular a um convidado"
+          >
+            <option value="">Vincular a…</option>
+            {guests.map((guest) => (
+              <option key={guest.id} value={guest.id}>
+                {guest.fullName}
+              </option>
+            ))}
+          </select>
+          <Button
+            type="button"
+            className="h-11 min-h-11 shrink-0 bg-gold text-navy"
+            disabled={busy || !guestId}
+            onClick={() => onLink(guestId)}
+          >
+            Vincular
+          </Button>
+        </div>
+      </td>
+      <td className="px-2 py-2">
+        <div className="flex gap-1">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 min-h-11"
+            disabled={busy}
+            onClick={onCreate}
+          >
+            Criar
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            className="h-11 min-h-11"
+            disabled={busy}
+            onClick={onDiscard}
+          >
+            Descartar
+          </Button>
+        </div>
+      </td>
+    </tr>
   );
 }

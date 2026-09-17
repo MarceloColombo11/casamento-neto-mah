@@ -13,8 +13,7 @@ export default async function ConvidadosPage() {
       <div>
         <h1 className="font-heading text-3xl font-semibold">Convidados</h1>
         <p className="mt-2 text-navy/75">
-          {confirmed} confirmaram · {declined} não vão · {pending} ainda não
-          responderam
+          {confirmed} confirmaram · {declined} não vão · {pending} pendentes
           {board.unmatched.length
             ? ` · ${board.unmatched.length} confirmação(ões) avulsa(s)`
             : ""}
