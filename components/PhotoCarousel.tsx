@@ -34,11 +34,7 @@ export function PhotoCarousel({
 
     if (images.length === 0) {
         return (
-            <div className="flex aspect-[4/5] items-center justify-center rounded-xl border border-olive/20 bg-cream/50">
-                <p className="text-olive/80">
-                    Adicione fotos em /public/images/casal/
-                </p>
-            </div>
+            <div className="flex aspect-[4/5] items-center justify-center rounded-xl border border-olive/20 bg-cream/50" />
         );
     }
 
@@ -52,6 +48,7 @@ export function PhotoCarousel({
                                 src={src}
                                 alt={`${alt} ${i + 1}`}
                                 fill
+                                unoptimized={src.startsWith("/api/site-media/")}
                                 className="object-cover"
                                 sizes="(max-width: 768px) 100vw, 50vw"
                                 priority={i === 0}

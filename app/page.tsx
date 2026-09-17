@@ -10,12 +10,15 @@ import { TimelineSection } from "@/components/TimelineSection";
 import { TrajeSection } from "@/components/TrajeSection";
 import { HeroBackgroundCarousel } from "@/components/HeroBackgroundCarousel";
 import Monograma from "@/components/monograma";
+import { getPublicSiteContent } from "@/lib/content/public";
 
-import presentesData from "@/data/presentes.json";
 import programacaoData from "@/data/programacao.json";
-import sobreNosData from "@/data/sobre-nos.json";
 
-export default function Home() {
+export const revalidate = 60;
+
+export default async function Home() {
+    const content = await getPublicSiteContent();
+
     return (
         <>
             <Navbar />
@@ -26,7 +29,7 @@ export default function Home() {
                         id="hero"
                         className="relative h-[85dvh] min-h-90 overflow-hidden sm:h-[90dvh] md:h-dvh"
                     >
-                        <HeroBackgroundCarousel />
+                        <HeroBackgroundCarousel images={content.heroImageUrls} />
                         <div className="pointer-events-none absolute inset-0 bg-white/20" />
                         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-4 text-center">
                             <h1 className="sr-only">Neto & Mariah</h1>
@@ -43,8 +46,7 @@ export default function Home() {
                             13 · 03 · 2027
                         </p>
                         <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-olive sm:mt-5 sm:text-lg">
-                            Estamos contando os dias para celebrar esse momento
-                            com você!
+                            {content.heroMessage}
                         </p>
                         <div className="mt-8 md:mt-10">
                             <CountdownTimer />
@@ -55,7 +57,7 @@ export default function Home() {
                 {/* 2. O Grande Dia (intro + programação) */}
                 <section id="grande-dia" className="bg-white">
                     <div className="px-4 py-16 md:py-20 lg:py-24">
-                        <GrandeDiaSection />
+                        <GrandeDiaSection paragraphs={content.grandeDiaParagraphs} />
                     </div>
                     <div className="px-4 py-16 md:py-20 lg:py-24">
                         <TimelineSection events={programacaoData} />
@@ -75,7 +77,7 @@ export default function Home() {
                     id="traje"
                     className="bg-white px-4 py-16 md:py-20 lg:py-24"
                 >
-                    <TrajeSection />
+                    <TrajeSection paragraphs={content.trajeParagraphs} />
                 </section>
 
                 {/* 6. Nossa História */}
@@ -83,7 +85,7 @@ export default function Home() {
                     id="nossa-historia"
                     className="bg-white px-4 py-12 md:py-16 lg:py-20"
                 >
-                    <AboutSection content={sobreNosData} />
+                    <AboutSection content={content.nossaHistoria} />
                 </section>
 
                 {/* 7. Lista de presentes */}
@@ -92,9 +94,8 @@ export default function Home() {
                     className="bg-white px-4 py-16 md:py-20 lg:py-24"
                 >
                     <GiftsSection
-                        presents={presentesData.map(
-                            ({ chavePix: _chavePix, ...p }) => p,
-                        )}
+                        intro={content.presentesIntro}
+                        presents={content.gifts}
                     />
                 </section>
 

@@ -37,6 +37,10 @@ Acesse [http://localhost:3000](http://localhost:3000).
 | `GOOGLE_DRIVE_FOLDER_ID`      | ID da pasta do Drive onde as mídias serão salvas             |
 | `NEXT_PUBLIC_SITE_URL`        | (Opcional) URL pública do site — ajuda no CORS do upload     |
 | `NEXT_PUBLIC_WEDDING_DATE`    | Data e hora (ex: 2027-03-13T16:00:00)                        |
+| `DATABASE_URL`                | Neon Postgres pooled (Marketplace da Vercel, sem `NEXT_PUBLIC_`) |
+| `ADMIN_USERNAME`              | Identificador compartilhado do casal                         |
+| `ADMIN_PASSWORD_HASH`         | Hash scrypt (`node scripts/hash-admin-password.mjs`)         |
+| `ADMIN_SESSION_SECRET`        | Segredo da sessão (≥ 32 caracteres aleatórios)               |
 
 ## Upload de mídias (Google Drive)
 
@@ -65,8 +69,9 @@ Na pasta `scripts/` está o código de **RSVP** (confirmações em planilha). Ve
 
 ## Personalização
 
-- **Fotos**: adicione imagens em `public/images/` e atualize os JSONs em `data/`
-- **Presentes**: edite `data/presentes.json` (inclua a chave Pix real)
+- **Fotos**: geridas em `/admin` (capa e Nossa História). Sem banco, o site usa `public/images/`.
+- **Presentes**: geridos em `/admin`. Sem banco, o site usa `data/presentes.json`.
+- **Textos da home, Grande Dia, Traje e Nossa História**: geridos em `/admin`.
 - **Local**: atualize `data/venue.json` e o embed em `components/MapWidget.tsx`
 - **Padrinhos/Damas**: edite `data/padrinhos.json`, `data/damas.json`, `data/convidados-honra.json`
 - **Programação**: edite `data/programacao.json`
@@ -87,5 +92,22 @@ Configure no painel da Vercel (**Project Settings > Environment Variables**):
 - `GOOGLE_DRIVE_FOLDER_ID`
 - `NEXT_PUBLIC_WEDDING_DATE`
 - (recomendado) `NEXT_PUBLIC_SITE_URL`
+- `DATABASE_URL` (Neon Free no Marketplace; cada preview usa a branch de preview)
+- `ADMIN_USERNAME`
+- `ADMIN_PASSWORD_HASH`
+- `ADMIN_SESSION_SECRET`
 
 O `.env.local` é apenas para desenvolvimento local.
+
+## Painel dos noivos
+
+A área `/admin/login` **não** aparece no menu. O casal recebe o endereço por mensagem privada.
+
+1. Crie o hash da senha: `node scripts/hash-admin-password.mjs`
+2. Preencha `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH`, `ADMIN_SESSION_SECRET` e `DATABASE_URL`
+3. Aplique o schema uma vez: `npm run db:migrate`
+4. Abra `http://localhost:3000/admin/login`
+
+O primeiro acesso com banco configurado copia o conteúdo atual do site (presentes de exemplo, fotos da capa e textos). Depois disso, o casal edita pelo painel. Sem banco, o site público continua no fallback dos JSON/`public`; salvar no painel mostra erro.
+
+Fotos novas do painel usam o mesmo Google Drive do álbum de convidados (até 8 MB, JPEG/PNG/WebP).

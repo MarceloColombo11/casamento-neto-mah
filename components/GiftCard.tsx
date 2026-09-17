@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Gift } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface Presente {
@@ -18,10 +19,8 @@ interface GiftCardProps {
   className?: string;
 }
 
-const getImagemUrl = (id: string) => `/imagensPresentes/${id}.jpeg`;
-
 export function GiftCard({ presente, onClick, className }: GiftCardProps) {
-  const imagemUrl = getImagemUrl(presente.id);
+  const imagemUrl = presente.imagem?.trim() || null;
 
   return (
     <button
@@ -33,14 +32,21 @@ export function GiftCard({ presente, onClick, className }: GiftCardProps) {
       )}
       aria-label={`Ver detalhes do presente: ${presente.nome}`}
     >
-      <div className="relative size-16 min-w-[4rem] min-h-[4rem] overflow-hidden rounded-full bg-sage/20 transition-colors group-hover:bg-sage/30">
-        <Image
-          src={imagemUrl}
-          alt={presente.nome}
-          fill
-          className="object-cover"
-          sizes="64px"
-        />
+      <div className="relative size-16 min-h-[4rem] min-w-[4rem] overflow-hidden rounded-full bg-sage/20 transition-colors group-hover:bg-sage/30">
+        {imagemUrl ? (
+          <Image
+            src={imagemUrl}
+            alt={presente.nome}
+            fill
+            unoptimized={imagemUrl.startsWith("/api/site-media/")}
+            className="object-cover"
+            sizes="64px"
+          />
+        ) : (
+          <span className="flex size-full items-center justify-center text-olive/70">
+            <Gift className="size-7" aria-hidden />
+          </span>
+        )}
       </div>
       <div className="text-center">
         <h3 className="font-heading text-lg font-semibold text-brown">

@@ -20,52 +20,103 @@ interface GiftModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function GiftModal({ presente, open, onOpenChange }: GiftModalProps) {
+function GiftPixPanel({ giftId }: { giftId: string }) {
   const [copied, setCopied] = useState(false);
   const [chavePix, setChavePix] = useState<string | null>(null);
-  const [loadingPix, setLoadingPix] = useState(false);
+  const [loadingPix, setLoadingPix] = useState(true);
   const [errorPix, setErrorPix] = useState(false);
 
   useEffect(() => {
-    if (!presente?.id || !open) {
-      setChavePix(null);
-      setErrorPix(false);
-      return;
-    }
-    setChavePix(null);
-    setLoadingPix(true);
-    setErrorPix(false);
+    let cancelled = false;
 
-    fetch(`/api/presentes/${encodeURIComponent(presente.id)}`)
+    fetch(`/api/presentes/${encodeURIComponent(giftId)}`)
       .then((res) => {
+        if (res.status === 404) return null;
         if (!res.ok) throw new Error("Falha ao carregar");
-        return res.json();
+        return res.json() as Promise<{ chavePix: string }>;
       })
-      .then((data: { chavePix: string }) => {
-        setChavePix(data.chavePix ?? null);
+      .then((data) => {
+        if (cancelled) return;
+        setChavePix(data?.chavePix ?? null);
       })
       .catch(() => {
+        if (cancelled) return;
         setErrorPix(true);
         toast.error("Erro ao carregar chave Pix. Tente novamente.");
       })
       .finally(() => {
-        setLoadingPix(false);
+        if (!cancelled) setLoadingPix(false);
       });
-  }, [presente?.id, open]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [giftId]);
 
   const handleCopyPix = () => {
     if (!chavePix) return;
     navigator.clipboard.writeText(chavePix);
     setCopied(true);
     toast.success("Chave copiada! Cole no app do seu banco.");
-    setTimeout(() => setCopied(false), 2000);
+    window.setTimeout(() => setCopied(false), 2000);
   };
 
+  if (!loadingPix && !errorPix && !chavePix) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-4 rounded-lg border border-olive/20 bg-cream/50 p-4">
+      <p className="text-sm font-medium text-brown">Pague via Pix</p>
+      {loadingPix ? (
+        <div className="flex size-40 items-center justify-center">
+          <Loader2 className="size-10 animate-spin text-olive" />
+        </div>
+      ) : errorPix ? (
+        <p className="text-sm text-red-600">
+          Não foi possível carregar a chave Pix.
+        </p>
+      ) : chavePix ? (
+        <>
+          <QRCodeSVG
+            value={chavePix}
+            size={160}
+            level="M"
+            className="rounded-lg"
+          />
+          <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-start">
+            <code className="min-w-0 overflow-x-auto whitespace-nowrap rounded bg-white px-3 py-2 text-xs text-olive">
+              {chavePix}
+            </code>
+            <Button
+              variant="outline"
+              size="icon"
+              className="shrink-0"
+              onClick={handleCopyPix}
+              aria-label="Copiar chave Pix"
+            >
+              {copied ? (
+                <Check className="size-4 text-green-600" />
+              ) : (
+                <Copy className="size-4" />
+              )}
+            </Button>
+          </div>
+          <p className="break-words text-xs text-olive">
+            Copie a chave e cole no app do seu banco para pagar via Pix.
+          </p>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+export function GiftModal({ presente, open, onOpenChange }: GiftModalProps) {
   if (!presente) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-md overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-heading break-words text-brown">
             {presente.nome}
@@ -82,49 +133,7 @@ export function GiftModal({ presente, open, onOpenChange }: GiftModalProps) {
               {presente.valor}
             </p>
           )}
-
-          <div className="flex flex-col items-center gap-4 rounded-lg border border-olive/20 bg-cream/50 p-4">
-            <p className="text-sm font-medium text-brown">Pague via Pix</p>
-            {loadingPix ? (
-              <div className="flex size-40 items-center justify-center">
-                <Loader2 className="size-10 animate-spin text-olive" />
-              </div>
-            ) : errorPix ? (
-              <p className="text-sm text-red-600">
-                Não foi possível carregar a chave Pix.
-              </p>
-            ) : chavePix ? (
-              <>
-                <QRCodeSVG
-                  value={chavePix}
-                  size={160}
-                  level="M"
-                  className="rounded-lg"
-                />
-                <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-start">
-                  <code className="min-w-0 overflow-x-auto whitespace-nowrap rounded bg-white px-3 py-2 text-xs text-olive">
-                    {chavePix}
-                  </code>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="shrink-0"
-                    onClick={handleCopyPix}
-                    aria-label="Copiar chave Pix"
-                  >
-                    {copied ? (
-                      <Check className="size-4 text-green-600" />
-                    ) : (
-                      <Copy className="size-4" />
-                    )}
-                  </Button>
-                </div>
-                <p className="break-words text-xs text-olive">
-                  Copie a chave e cole no app do seu banco para pagar via Pix.
-                </p>
-              </>
-            ) : null}
-          </div>
+          {open ? <GiftPixPanel key={presente.id} giftId={presente.id} /> : null}
         </div>
       </DialogContent>
     </Dialog>

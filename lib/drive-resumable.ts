@@ -12,6 +12,8 @@ export type CreateResumableSessionInput = {
   size: number;
   /** Origin do browser — obrigatório para CORS no PUT direto ao Drive */
   origin: string;
+  /** Nome exato no Drive. Se omitido, usa o padrão do álbum de convidados. */
+  driveName?: string;
 };
 
 function mapDriveError(status: number, bodyPreview: string): string {
@@ -48,7 +50,7 @@ export async function createResumableUploadSession(
   }
 
   const accessToken = await getDriveAccessToken();
-  const driveName = buildDriveFileName(input.fileName);
+  const driveName = input.driveName ?? buildDriveFileName(input.fileName);
 
   const initUrl =
     "https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true";
@@ -84,4 +86,76 @@ export async function createResumableUploadSession(
   }
 
   return { uploadUrl };
+}
+
+export type DriveFileMeta = {
+  id: string;
+  mimeType: string;
+  size: number;
+};
+
+export async function findDriveFileByName(
+  name: string,
+  attempts = 4,
+): Promise<DriveFileMeta | null> {
+  const accessToken = await getDriveAccessToken();
+  const q = `name='${name.replace(/'/g, "\\'")}' and trashed=false`;
+  const url =
+    "https://www.googleapis.com/drive/v3/files?" +
+    new URLSearchParams({
+      q,
+      fields: "files(id,mimeType,size)",
+      supportsAllDrives: "true",
+      includeItemsFromAllDrives: "true",
+      pageSize: "1",
+    }).toString();
+
+  for (let i = 0; i < attempts; i += 1) {
+    const response = await fetch(url, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (!response.ok) {
+      console.error("[drive-find]", { status: response.status });
+      return null;
+    }
+    const body = (await response.json()) as {
+      files?: { id?: string; mimeType?: string; size?: string }[];
+    };
+    const file = body.files?.[0];
+    if (file?.id) {
+      return {
+        id: file.id,
+        mimeType: file.mimeType || "application/octet-stream",
+        size: Number(file.size ?? 0),
+      };
+    }
+    await new Promise((resolve) => setTimeout(resolve, 400 * (i + 1)));
+  }
+
+  return null;
+}
+
+export async function downloadDriveFile(
+  fileId: string,
+): Promise<{ bytes: ArrayBuffer; ok: boolean; status: number }> {
+  const accessToken = await getDriveAccessToken();
+  const response = await fetch(
+    `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media&supportsAllDrives=true`,
+    { headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+  if (!response.ok) {
+    return { bytes: new ArrayBuffer(0), ok: false, status: response.status };
+  }
+  return { bytes: await response.arrayBuffer(), ok: true, status: 200 };
+}
+
+export async function deleteDriveFile(fileId: string): Promise<void> {
+  const accessToken = await getDriveAccessToken();
+  const response = await fetch(
+    `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?supportsAllDrives=true`,
+    { method: "DELETE", headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+  if (!response.ok && response.status !== 404) {
+    console.error("[drive-delete]", { status: response.status });
+  }
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getClientIp, isAllowedOrigin } from "@/lib/request-origin";
 
 const RSVP_URL = process.env.GOOGLE_APPS_SCRIPT_RSVP_URL ?? "";
 const RSVP_TIMEOUT_MS = 30_000; // Google Apps Script pode demorar em cold start
@@ -7,12 +8,6 @@ const RSVP_TIMEOUT_MS = 30_000; // Google Apps Script pode demorar em cold start
 const rateLimitMap = new Map<string, number[]>();
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 5;
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  const realIp = request.headers.get("x-real-ip");
-  return forwarded?.split(",")[0]?.trim() ?? realIp ?? "unknown";
-}
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
@@ -25,32 +20,6 @@ function isRateLimited(ip: string): boolean {
   recent.push(now);
   rateLimitMap.set(ip, recent);
   return false;
-}
-
-function isAllowedOrigin(request: Request): boolean {
-  if (process.env.NODE_ENV !== "production") return true;
-
-  const origin = request.headers.get("origin");
-  const referer = request.headers.get("referer");
-
-  const allowedHosts = [
-    "localhost",
-    "127.0.0.1",
-    process.env.VERCEL_URL,
-    process.env.VERCEL_PROJECT_PRODUCTION_URL,
-  ].filter(Boolean);
-
-  const url = origin || referer;
-  if (!url) return true; // Same-origin or no header (e.g. server-side)
-
-  try {
-    const host = new URL(url).hostname.replace(/^www\./, "");
-    return allowedHosts.some(
-      (h) => h && (host === h || host.endsWith(`.${h}`))
-    );
-  } catch {
-    return false;
-  }
 }
 
 function parseGasResponse(text: string) {
