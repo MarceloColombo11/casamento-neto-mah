@@ -44,6 +44,9 @@ service-account*.json
 # vercel
 .vercel
 
+# local agent tooling (skills are versioned in .cursor/skills)
+/.agents/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
