@@ -31,9 +31,8 @@ export function LocationSection() {
                                     src={src}
                                     alt={`${venueData.nome} — foto ${i + 1}`}
                                     fill
-                                    sizes="(max-width: 640px) 100vw, 448px"
+                                    unoptimized
                                     className="object-cover object-center"
-                                    priority={i === 0}
                                 />
                             </div>
                         ))}
