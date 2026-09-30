@@ -21,17 +21,17 @@ export function LocationSection() {
 
             <div className="flex flex-col gap-10 md:gap-12">
                 {imagens.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+                    <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
                         {imagens.map((src, i) => (
                             <div
                                 key={src}
-                                className="relative aspect-[4/3] overflow-hidden rounded-xl border border-beige"
+                                className="relative aspect-[3/4] overflow-hidden rounded-xl border border-beige"
                             >
                                 <Image
                                     src={src}
                                     alt={`${venueData.nome} — foto ${i + 1}`}
                                     fill
-                                    sizes="(max-width: 640px) 100vw, 50vw"
+                                    sizes="(max-width: 640px) 100vw, 448px"
                                     className="object-cover object-center"
                                     priority={i === 0}
                                 />
