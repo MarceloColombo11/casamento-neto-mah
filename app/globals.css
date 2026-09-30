@@ -18,6 +18,8 @@
   --color-navy: #1f2a44;
   --color-mist: #f7f7f7;
   --color-gold: #c6a75e;
+  /* Dourado com contraste AA sobre branco, para texto pequeno */
+  --color-gold-deep: #8c6221;
   --color-slate: #1f2a44;
   --color-periwinkle: #94accb;
   --color-beige: #e8dcc8;

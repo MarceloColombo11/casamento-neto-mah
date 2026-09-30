@@ -35,11 +35,12 @@ export function GiftsSection({ presents, intro }: GiftsSectionProps) {
           A lista de presentes está sendo preparada.
         </p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {presents.map((presente) => (
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-5 gap-y-10 sm:gap-x-8 sm:gap-y-14 md:grid-cols-3 lg:grid-cols-4">
+          {presents.map((presente, index) => (
             <GiftCard
               key={presente.id}
               presente={presente}
+              index={index}
               onClick={() => handleSelectPresent(presente)}
             />
           ))}
